@@ -1,1 +1,0 @@
-import{b as e}from"./index-BKzFXWaZ.js";const r={getAll:()=>e.get("/products"),getById:t=>e.get(`/products/${t}`),create:t=>e.post("/products",t),update:(t,p)=>e.put(`/products/${t}`,p),delete:t=>e.delete(`/products/${t}`)};export{r as p};
