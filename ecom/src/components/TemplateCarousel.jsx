@@ -57,7 +57,7 @@ const TemplateCarousel = () => {
       >
 
         {/* ================= CARD 1: HERO LAYOUT ================= */}
-        <div className="min-w-[85vw] md:min-w-[900px] h-[550px] bg-gradient-to-b from-[#E0E7FF] to-[#F3F4F6] rounded-[2.5rem] p-6 md:p-10 flex gap-6 shadow-xl snap-center shrink-0">
+        <div className="min-w-[85vw] md:min-w-[900px] h-[550px] bg-[#0055FF] rounded-[2.5rem] p-6 md:p-10 flex gap-6 shadow-xl snap-center shrink-0">
 
           {/* Desktop Preview */}
           <div className="flex-1 bg-[#050505] rounded-3xl overflow-hidden relative shadow-2xl flex flex-col">
@@ -92,7 +92,7 @@ const TemplateCarousel = () => {
               {/* 3D Shapes Simulation */}
               <div className="mt-10 flex gap-4 opacity-80">
                 <div className="w-16 h-16 rounded-full border-4 border-blue-500/50"></div>
-                <div className="w-16 h-16 rounded-lg bg-gradient-to-tr from-blue-600 to-purple-600"></div>
+                <div className="w-16 h-16 rounded-lg bg-[#0055FF]
               </div>
             </div>
           </div>
@@ -108,7 +108,7 @@ const TemplateCarousel = () => {
               <h3 className="text-white text-xl font-bold leading-tight mb-4">
                 Ready to transform?
               </h3>
-              <div className="w-full h-24 bg-gradient-to-b from-blue-900/20 to-transparent rounded-xl mb-4 border border-white/5"></div>
+              <div className="w-full h-24 bg-[#0055FF] rounded-xl mb-4 border border-white/5"></div>
               <button className="w-full bg-blue-600 text-white py-2 rounded-full text-xs font-bold mt-auto mb-8">
                 Get Started
               </button>
@@ -118,7 +118,7 @@ const TemplateCarousel = () => {
 
 
         {/* ================= CARD 2: FEATURES LAYOUT ================= */}
-        <div className="min-w-[85vw] md:min-w-[900px] h-[550px] bg-gradient-to-b from-[#E0E7FF] to-[#F3F4F6] rounded-[2.5rem] p-6 md:p-10 flex gap-6 shadow-xl snap-center shrink-0">
+        <div className="min-w-[85vw] md:min-w-[900px] h-[550px] bg-[#0055FF] rounded-[2.5rem] p-6 md:p-10 flex gap-6 shadow-xl snap-center shrink-0">
 
           {/* Desktop Preview */}
           <div className="flex-1 bg-[#050505] rounded-3xl overflow-hidden relative shadow-2xl flex flex-col">
@@ -139,7 +139,7 @@ const TemplateCarousel = () => {
                 <div className="w-8 h-8 rounded-lg bg-blue-500/20"></div>
                 <div className="h-2 w-16 bg-white/20 rounded"></div>
               </div>
-              <div className="col-span-2 bg-gradient-to-r from-blue-900/40 to-purple-900/40 rounded-xl border border-white/10 p-4 relative overflow-hidden">
+              <div className="col-span-2 bg-[#0055FF] rounded-xl border border-white/10 p-4 relative overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-blue-200 text-xs font-mono">AI Analysis Active...</span>
                 </div>
@@ -178,7 +178,7 @@ const TemplateCarousel = () => {
 
 
         {/* ================= CARD 3: PRICING LAYOUT ================= */}
-        <div className="min-w-[85vw] md:min-w-[900px] h-[550px] bg-gradient-to-b from-[#E0E7FF] to-[#F3F4F6] rounded-[2.5rem] p-6 md:p-10 flex gap-6 shadow-xl snap-center shrink-0">
+        <div className="min-w-[85vw] md:min-w-[900px] h-[550px] bg-[#0055FF] rounded-[2.5rem] p-6 md:p-10 flex gap-6 shadow-xl snap-center shrink-0">
 
           {/* Desktop Preview */}
           <div className="flex-1 bg-[#050505] rounded-3xl overflow-hidden relative shadow-2xl flex flex-col">

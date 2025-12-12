@@ -1,10 +1,11 @@
 import React, { Suspense, lazy, useState, useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 // Components
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import LoginModal from "./components/auth/LoginModal";
+import OfflineBanner from "./components/ui/OfflineBanner";
 
 // Context Providers
 import { AuthProvider } from "./context/AuthContext";
@@ -22,13 +23,20 @@ const FAQ = lazy(() => import("./pages/FAQ"));
 const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const TemplatesDetails = lazy(() => import("./pages/TemplatesDetails"));
-const Login = lazy(() => import("./pages/Auth/Login"));
-const Register = lazy(() => import("./pages/Auth/Register"));
 const AdminDashboard = lazy(() => import("./pages/Admin/Dashboard"));
 const ProductEdit = lazy(() => import("./pages/Admin/ProductEdit"));
 const Cart = lazy(() => import("./pages/Cart"));
 const Wishlist = lazy(() => import("./pages/Wishlist"));
 const Profile = lazy(() => import("./pages/Profile"));
+
+// New Pages
+const Checkout = lazy(() => import("./pages/Checkout"));
+const Docs = lazy(() => import("./pages/Docs"));
+const DocDetail = lazy(() => import("./pages/DocDetail"));
+const Saas = lazy(() => import("./pages/Saas"));
+const DeveloperHub = lazy(() => import("./pages/DeveloperHub"));
+const OAuthCallback = lazy(() => import("./pages/OAuthCallback"));
+const ForgotPassword = lazy(() => import("./pages/Auth/ForgotPassword"));
 
 // Loading Spinner Component
 const LoadingFallback = () => (
@@ -44,6 +52,7 @@ const App = () => {
         <CartProvider>
           <ToastProvider>
             <div className="flex flex-col min-h-screen">
+              <OfflineBanner />
               <Navbar />
 
               <main className="flex-grow">
@@ -56,11 +65,22 @@ const App = () => {
                     <Route path="/testimonials" element={<Testimonials />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/contact" element={<Contact />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
+                    {/* Login/Register redirect to home - modal is used instead */}
+                    <Route path="/login" element={<Navigate to="/" replace />} />
+                    <Route path="/register" element={<Navigate to="/" replace />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/profile" element={<Profile />} />
+
+                    {/* New Routes */}
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/docs" element={<Docs />} />
+                    <Route path="/docs/:id" element={<DocDetail />} />
+                    <Route path="/saas" element={<Saas />} />
+                    <Route path="/app-developers" element={<DeveloperHub />} />
+                    <Route path="/oauth-callback" element={<OAuthCallback />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ForgotPassword />} />
 
                     {/* Admin Routes */}
                     <Route path="/admin/dashboard" element={<AdminDashboard />} />

@@ -46,7 +46,7 @@ const Profile = () => {
                 <div className="grid md:grid-cols-3 gap-8">
                     {/* User Info Card */}
                     <div className="bg-white p-8 rounded-3xl shadow-sm h-fit">
-                        <div className="w-20 h-20 bg-gray-200 rounded-full mb-6 mx-auto flex items-center justify-center text-2xl font-bold text-gray-400 uppercase">
+                        <div className="w-20 h-20 bg-gray-200 rounded-full mb-6 mx-auto flex items-center justify-center text-2xl font-bold text-gray-600 uppercase">
                             {user.name[0]}
                         </div>
                         <h2 className="text-xl font-bold text-center mb-1">{user.name}</h2>
@@ -61,7 +61,7 @@ const Profile = () => {
                         <h2 className="text-2xl font-bold mb-6">Order History</h2>
                         {orders.length === 0 ? (
                             <div className="bg-white p-10 rounded-3xl shadow-sm text-center">
-                                <p className="text-gray-400 mb-4">No orders yet.</p>
+                                <p className="text-gray-600 mb-4">No orders yet.</p>
                                 <button onClick={() => navigate('/templates')} className="text-[#0055FF] font-bold">Browse Templates</button>
                             </div>
                         ) : (
@@ -69,7 +69,7 @@ const Profile = () => {
                                 {orders.map((order) => (
                                     <div key={order._id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                                         <div className="flex justify-between items-center mb-4">
-                                            <span className="font-mono text-xs text-gray-400">Order #{order._id.substring(0, 8)}</span>
+                                            <span className="font-mono text-xs text-gray-600">Order #{order._id.substring(0, 8)}</span>
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.isPaid ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                                                 {order.isPaid ? 'Paid' : 'Pending'}
                                             </span>

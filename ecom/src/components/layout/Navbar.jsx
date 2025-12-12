@@ -42,10 +42,10 @@ const FloatingNavbar = () => {
 
                         <ul className="hidden lg:flex items-center gap-2">
                             {[
-                                { name: 'Templates', path: '/templates' },
-                                { name: 'Features', path: '/features' },
-                                { name: 'Testimonial', path: '/testimonials' },
-                                { name: 'FAQ', path: '/faq' }
+                                { name: 'Products', path: '/templates' },
+                                { name: 'Docs', path: '/docs' },
+                                { name: 'APIs', path: '/saas' },
+                                { name: 'Developer Hub', path: '/app-developers' },
                             ].map((item) => (
                                 <li key={item.name}>
                                     <NavLink
@@ -103,9 +103,9 @@ const FloatingNavbar = () => {
                                     <button onClick={() => setIsLoginModalOpen(true)} className="text-white text-sm font-bold px-4 py-2 rounded-full hover:bg-white/10 transition-colors">
                                         Sign In
                                     </button>
-                                    <Link to="/register" className="bg-[#0055FF] hover:bg-blue-600 text-white text-sm font-semibold px-6 py-3 rounded-full transition-colors duration-200 whitespace-nowrap shadow-[0_0_15px_rgba(0,85,255,0.3)]">
+                                    <button onClick={() => setIsLoginModalOpen(true)} className="bg-[#0055FF] hover:bg-blue-600 text-white text-sm font-semibold px-6 py-3 rounded-full transition-colors duration-200 whitespace-nowrap shadow-[0_0_15px_rgba(0,85,255,0.3)]">
                                         Get Started
-                                    </Link>
+                                    </button>
                                 </div>
                             )}
                         </div>

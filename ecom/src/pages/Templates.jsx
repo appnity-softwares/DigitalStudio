@@ -4,6 +4,7 @@ import productService from '../services/productService';
 import BuildSitesHeader from '../components/BuildSitesHeader';
 import TemplateGrid from '../components/TemplateGrid';
 import LoadingSkeleton from '../components/ui/LoadingSkeleton';
+import Pagination from '../components/ui/Pagination';
 
 const Templates = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -16,6 +17,8 @@ const Templates = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [selectedProductType, setSelectedProductType] = useState('all');
     const [sortBy, setSortBy] = useState('newest');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 12;
 
     useEffect(() => {
         fetchTemplates();
@@ -35,8 +38,9 @@ const Templates = () => {
         }
     };
 
-    // Client-side filtering
-    const filteredTemplates = templates.filter(template => {
+    // Client-side filtering (defensive: ensure templates is an array)
+    const templatesList = Array.isArray(templates) ? templates : [];
+    const filteredTemplates = templatesList.filter(template => {
         if (selectedCategory !== 'all' && template.category !== selectedCategory) {
             return false;
         }
@@ -63,8 +67,21 @@ const Templates = () => {
         }
     });
 
-    // Get unique categories and types
-    const categories = ['all', ...new Set(templates.map(t => t.category))];
+    // Pagination
+    const totalPages = Math.ceil(sortedTemplates.length / itemsPerPage);
+    const paginatedTemplates = sortedTemplates.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    // Reset to page 1 when filters change
+    const handleFilterChange = (setter, value) => {
+        setter(value);
+        setCurrentPage(1);
+    };
+
+    // Get unique categories and types (defensive)
+    const categories = ['all', ...new Set(templatesList.map(t => t.category).filter(Boolean))];
     const productTypes = [
         { value: 'all', label: 'All Products' },
         { value: 'fullstack', label: 'Full-Stack Projects' },
@@ -84,7 +101,7 @@ const Templates = () => {
             />
 
             {/* Filter Bar */}
-            <div className="w-full bg-white border-b border-gray-200 sticky top-0 z-40">
+            <div className="w-full bg-white border-b border-gray-200 sticky top-24 z-40">
                 <div className="max-w-[1400px] mx-auto px-6 py-4">
                     <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                         {/* Left: Filters */}
@@ -92,8 +109,8 @@ const Templates = () => {
                             {/* Product Type Filter */}
                             <select
                                 value={selectedProductType}
-                                onChange={(e) => setSelectedProductType(e.target.value)}
-                                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={(e) => handleFilterChange(setSelectedProductType, e.target.value)}
+                                className="px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-semibold text-black bg-white hover:border-[#0055FF] focus:outline-none focus:ring-2 focus:ring-[#0055FF] focus:border-transparent transition-all"
                             >
                                 {productTypes.map(type => (
                                     <option key={type.value} value={type.value}>{type.label}</option>
@@ -105,10 +122,10 @@ const Templates = () => {
                                 {categories.slice(0, 5).map(category => (
                                     <button
                                         key={category}
-                                        onClick={() => setSelectedCategory(category)}
-                                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory === category
-                                                ? 'bg-black text-white'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        onClick={() => handleFilterChange(setSelectedCategory, category)}
+                                        className={`px-4 py-2.5 rounded-full text-sm font-semibold transition-all shadow-sm ${selectedCategory === category
+                                            ? 'bg-black text-white shadow-md'
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             }`}
                                     >
                                         {category === 'all' ? 'All' : category}
@@ -119,13 +136,13 @@ const Templates = () => {
 
                         {/* Right: Sort & Count */}
                         <div className="flex items-center gap-4">
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-gray-600 font-medium">
                                 {sortedTemplates.length} {sortedTemplates.length === 1 ? 'product' : 'products'}
                             </span>
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-semibold text-black bg-white hover:border-[#0055FF] focus:outline-none focus:ring-2 focus:ring-[#0055FF] focus:border-transparent transition-all"
                             >
                                 <option value="newest">Newest</option>
                                 <option value="popular">Most Popular</option>
@@ -178,7 +195,20 @@ const Templates = () => {
                     </div>
                 </div>
             ) : (
-                <TemplateGrid items={sortedTemplates} />
+                <div className="pb-12">
+                    <TemplateGrid items={paginatedTemplates} />
+
+                    {/* Pagination */}
+                    <div className="max-w-[1400px] mx-auto px-6 mt-8">
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                            totalItems={sortedTemplates.length}
+                            itemsPerPage={itemsPerPage}
+                        />
+                    </div>
+                </div>
             )}
         </>
     );
