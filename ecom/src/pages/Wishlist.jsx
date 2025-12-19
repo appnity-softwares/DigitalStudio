@@ -26,7 +26,7 @@ const Wishlist = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {wishlistItems.map((item) => (
-                        <div key={item._id || item.id} className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow relative group">
+                        <div key={item._id || item.id} className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow relative group border border-gray-100">
                             <button
                                 onClick={() => removeFromWishlist(item._id || item.id)}
                                 className="absolute top-4 right-4 bg-gray-100 hover:bg-red-50 p-2 rounded-full transition-colors z-10"

@@ -1,136 +1,279 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Search, X, Package, FileText, Menu, User, ShoppingCart, Heart, Code } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
 import CartContext from '../../context/CartContext';
 import WishlistContext from '../../context/WishlistContext';
 import LoginModal from '../auth/LoginModal';
+import ThemeToggle from '../ui/ThemeToggle';
+import api from '../../services/api';
 
-const FloatingNavbar = () => {
-    const { user, logout } = useContext(AuthContext);
+const Navbar = () => {
+    const { user, logout, loading: authLoading } = useContext(AuthContext);
     const { cartItems } = useContext(CartContext);
     const { wishlistItems } = useContext(WishlistContext);
     const [searchQuery, setSearchQuery] = useState('');
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [showSearch, setShowSearch] = useState(false);
+    const [suggestions, setSuggestions] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const searchRef = useRef(null);
+    const debounceRef = useRef(null);
     const navigate = useNavigate();
 
-    const handleSearch = (e) => {
-        if (e.key === 'Enter') {
-            navigate(`/templates?search=${searchQuery}`);
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (searchRef.current && !searchRef.current.contains(e.target)) {
+                setShowSearch(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchQuery(value);
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        if (value.length >= 2) {
+            setLoading(true);
+            debounceRef.current = setTimeout(async () => {
+                try {
+                    const res = await api.get(`/search/suggestions?q=${encodeURIComponent(value)}`);
+                    setSuggestions(res.data.suggestions || []);
+                } catch (err) {
+                    console.log('Search error');
+                } finally {
+                    setLoading(false);
+                }
+            }, 300);
+        } else {
+            setSuggestions([]);
         }
     };
 
+    const handleSearch = (e) => {
+        if (e.key === 'Enter' && searchQuery.trim()) {
+            navigate(`/templates?search=${searchQuery}`);
+            setShowSearch(false);
+            setSuggestions([]);
+        }
+    };
+
+    const navLinks = [
+        { name: 'Templates', path: '/templates' },
+        { name: 'Docs', path: '/docs' },
+        { name: 'API Tools', path: '/saas' },
+        { name: 'Mobile Apps', path: '/mobile-templates' },
+        { name: 'Pricing', path: '/pricing' },
+    ];
+
     return (
         <>
-            <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+            <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-3">
+                <div className="max-w-7xl mx-auto">
+                    <div className="glass-navbar rounded-2xl px-6 py-3 flex items-center justify-between">
 
-            <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
-                <div className="w-full max-w-[1400px] flex flex-col md:flex-row items-center justify-between gap-4 pointer-events-auto">
-
-                    <nav className="bg-black rounded-full p-2 pl-6 pr-2 flex items-center gap-6 shadow-2xl">
-                        <Link to="/" className="flex items-center gap-2 mr-2">
-                            <div className="relative flex items-center justify-center w-8 h-8 bg-[#0055FF] rounded-full overflow-hidden shrink-0">
-                                <svg viewBox="0 0 24 24" className="w-5 h-5 text-white fill-current">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8z" fill="none" />
-                                    <rect x="2" y="11" width="20" height="2" fill="white" />
-                                    <path d="M12 12V22" stroke="white" strokeWidth="2" />
-                                </svg>
+                        {/* Logo */}
+                        <Link to="/" className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-[var(--accent-primary)] flex items-center justify-center">
+                                <Code className="w-4 h-4 text-white" />
                             </div>
-                            <span className="text-white font-bold text-xl tracking-tight select-none">
-                                FlowGrid
+                            <span className="text-lg font-bold text-[var(--text-primary)]">
+                                CodeStudio
                             </span>
                         </Link>
 
-                        <ul className="hidden lg:flex items-center gap-2">
-                            {[
-                                { name: 'Products', path: '/templates' },
-                                { name: 'Docs', path: '/docs' },
-                                { name: 'APIs', path: '/saas' },
-                                { name: 'Developer Hub', path: '/app-developers' },
-                            ].map((item) => (
-                                <li key={item.name}>
-                                    <NavLink
-                                        to={item.path}
-                                        className={({ isActive }) =>
-                                            `block text-white text-sm font-medium px-5 py-2.5 rounded-full border transition-all duration-200 ${isActive ? 'bg-white/10 border-white/40' : 'border-white/10 hover:border-white/40 hover:bg-white/5'
-                                            }`
-                                        }
-                                    >
-                                        {item.name}
-                                    </NavLink>
-                                </li>
+                        {/* Desktop Nav Links */}
+                        <div className="hidden lg:flex items-center gap-1">
+                            {navLinks.map((link) => (
+                                <NavLink
+                                    key={link.path}
+                                    to={link.path}
+                                    className={({ isActive }) =>
+                                        `px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
+                                            ? 'bg-[var(--accent-subtle)] text-[var(--accent-primary)]'
+                                            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]'
+                                        }`
+                                    }
+                                >
+                                    {link.name}
+                                </NavLink>
                             ))}
-                        </ul>
+                        </div>
 
-                        <div className="flex items-center gap-4 pl-4 border-l border-white/10">
-                            {/* Wishlist & Cart Icons */}
-                            <div className="flex items-center gap-2 mr-2">
-                                <Link to="/wishlist" className="relative p-2 text-white/70 hover:text-white transition-colors">
-                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
-                                    {wishlistItems.length > 0 && (
-                                        <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full">
-                                            {wishlistItems.length}
-                                        </span>
+                        {/* Right Section */}
+                        <div className="flex items-center gap-3">
+                            {/* Search */}
+                            <div ref={searchRef} className="relative hidden md:block">
+                                <button
+                                    onClick={() => setShowSearch(!showSearch)}
+                                    className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                                >
+                                    <Search className="w-5 h-5" />
+                                </button>
+
+                                <AnimatePresence>
+                                    {showSearch && (
+                                        <motion.div
+                                            initial={{ opacity: 0, width: 0 }}
+                                            animate={{ opacity: 1, width: 280 }}
+                                            exit={{ opacity: 0, width: 0 }}
+                                            className="absolute right-0 top-0"
+                                        >
+                                            <div className="glass-card py-1 px-3 flex items-center gap-2">
+                                                <Search className="w-4 h-4 text-[var(--text-tertiary)]" />
+                                                <input
+                                                    type="text"
+                                                    value={searchQuery}
+                                                    onChange={handleSearchChange}
+                                                    onKeyDown={handleSearch}
+                                                    placeholder="Search templates..."
+                                                    className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                                                    autoFocus
+                                                />
+                                                <button onClick={() => setShowSearch(false)}>
+                                                    <X className="w-4 h-4 text-[var(--text-tertiary)]" />
+                                                </button>
+                                            </div>
+
+                                            {suggestions.length > 0 && (
+                                                <div className="absolute top-12 left-0 right-0 glass-card p-2 space-y-1">
+                                                    {suggestions.map((s, i) => (
+                                                        <button
+                                                            key={i}
+                                                            onClick={() => {
+                                                                navigate(s.url || `/templates?search=${s.text}`);
+                                                                setShowSearch(false);
+                                                            }}
+                                                            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-left text-sm"
+                                                        >
+                                                            {s.type === 'product' ? <Package className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
+                                                            <span className="text-[var(--text-primary)]">{s.text}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </motion.div>
                                     )}
-                                </Link>
-                                <Link to="/cart" className="relative p-2 text-white/70 hover:text-white transition-colors">
-                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                    </svg>
-                                    {cartItems.length > 0 && (
-                                        <span className="absolute top-0 right-0 w-4 h-4 bg-[#0055FF] text-white text-[10px] font-bold flex items-center justify-center rounded-full">
-                                            {cartItems.length}
-                                        </span>
-                                    )}
-                                </Link>
+                                </AnimatePresence>
                             </div>
 
+                            {/* Theme Toggle */}
+                            <ThemeToggle />
+
+                            {/* Wishlist */}
+                            <Link
+                                to="/wishlist"
+                                className="relative p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                            >
+                                <Heart className="w-5 h-5" />
+                                {wishlistItems.length > 0 && (
+                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--error)] text-white text-[10px] font-bold flex items-center justify-center rounded-full">
+                                        {wishlistItems.length}
+                                    </span>
+                                )}
+                            </Link>
+
+                            {/* Cart */}
+                            <Link
+                                to="/cart"
+                                className="relative p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                            >
+                                <ShoppingCart className="w-5 h-5" />
+                                {cartItems.length > 0 && (
+                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent-primary)] text-white text-[10px] font-bold flex items-center justify-center rounded-full">
+                                        {cartItems.length}
+                                    </span>
+                                )}
+                            </Link>
+
+                            {/* User Menu */}
                             {user ? (
-                                <>
-                                    <Link to="/profile" className="text-white text-sm font-bold hidden sm:block hover:text-blue-400 transition-colors">
-                                        Hi, {user.name.split(' ')[0]}
-                                    </Link>
-                                    <button
-                                        onClick={logout}
-                                        className="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2 rounded-full transition-colors"
-                                    >
-                                        Logout
+                                <div className="relative group">
+                                    <button className="flex items-center gap-2 p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors">
+                                        <div className="w-8 h-8 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
+                                            {user.avatar ? (
+                                                <img src={user.avatar} className="w-full h-full rounded-lg object-cover" />
+                                            ) : (
+                                                <span className="text-sm font-bold text-[var(--accent-primary)]">
+                                                    {user.name?.[0]?.toUpperCase()}
+                                                </span>
+                                            )}
+                                        </div>
                                     </button>
-                                </>
-                            ) : (
-                                <div className="flex items-center gap-2">
-                                    <button onClick={() => setIsLoginModalOpen(true)} className="text-white text-sm font-bold px-4 py-2 rounded-full hover:bg-white/10 transition-colors">
-                                        Sign In
-                                    </button>
-                                    <button onClick={() => setIsLoginModalOpen(true)} className="bg-[#0055FF] hover:bg-blue-600 text-white text-sm font-semibold px-6 py-3 rounded-full transition-colors duration-200 whitespace-nowrap shadow-[0_0_15px_rgba(0,85,255,0.3)]">
-                                        Get Started
-                                    </button>
+
+                                    <div className="absolute right-0 top-full mt-2 w-48 glass-card p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                                        <Link to="/profile" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-sm">
+                                            <User className="w-4 h-4" />
+                                            Profile
+                                        </Link>
+                                        {user.role === 'ADMIN' && (
+                                            <Link to="/admin" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-sm">
+                                                Admin Panel
+                                            </Link>
+                                        )}
+                                        <button
+                                            onClick={() => { logout(); navigate('/'); }}
+                                            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-sm text-[var(--error)]"
+                                        >
+                                            Sign Out
+                                        </button>
+                                    </div>
                                 </div>
+                            ) : authLoading ? (
+                                <div className="w-8 h-8 rounded-lg bg-[var(--bg-tertiary)] animate-pulse" />
+                            ) : (
+                                <button
+                                    onClick={() => setIsLoginModalOpen(true)}
+                                    className="btn-primary py-2 px-4 text-sm"
+                                >
+                                    Sign In
+                                </button>
                             )}
+
+                            {/* Mobile Menu Button */}
+                            <button
+                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                className="lg:hidden p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)]"
+                            >
+                                <Menu className="w-5 h-5" />
+                            </button>
                         </div>
-                    </nav>
-
-                    <div className="relative w-full md:w-[320px] shadow-xl rounded-full">
-                        <input
-                            type="text"
-                            placeholder="Search templates..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            onKeyDown={handleSearch}
-                            className="w-full bg-[#F3F4F6] text-gray-800 placeholder-gray-500 rounded-full px-6 py-3.5 outline-none focus:ring-2 focus:ring-blue-500/50 transition-all border border-transparent focus:bg-white"
-                        />
-                        <button onClick={() => navigate(`/templates?search=${searchQuery}`)} className="absolute right-5 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </button>
                     </div>
-
                 </div>
-            </div>
+            </nav>
+
+            {/* Mobile Menu */}
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="fixed top-20 left-4 right-4 z-40 glass-card p-4 lg:hidden"
+                    >
+                        <div className="space-y-1">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.path}
+                                    to={link.path}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="block px-4 py-3 rounded-lg hover:bg-[var(--bg-tertiary)] font-medium"
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
         </>
     );
 };
 
-export default FloatingNavbar;
+export default Navbar;

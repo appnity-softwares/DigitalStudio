@@ -36,6 +36,21 @@ app.use('/api/payment', require('./routes/paymentRoutes'));
 app.use('/api/download', require('./routes/downloadRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 
+// New feature routes
+app.use('/api/reviews', require('./routes/reviewRoutes'));
+app.use('/api/coupons', require('./routes/couponRoutes'));
+app.use('/api/webhooks', require('./routes/webhookRoutes'));
+app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+app.use('/api/wishlist', require('./routes/wishlistRoutes'));
+app.use('/api/analytics', require('./routes/analyticsRoutes'));
+app.use('/api/refunds', require('./routes/refundRoutes'));
+app.use('/api/invoices', require('./routes/invoiceRoutes'));
+app.use('/api/search', require('./routes/searchRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes'));
+app.use('/api/tools', require('./routes/toolsRoutes'));
+app.use('/api/razorpay', require('./routes/razorpayRoutes'));
+app.use('/api/template-requests', require('./routes/templateRequestRoutes'));
+
 // Error handler middleware
 app.use((err, req, res, next) => {
     const statusCode = res.statusCode === 200 ? 500 : res.statusCode;

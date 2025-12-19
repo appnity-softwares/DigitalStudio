@@ -21,11 +21,13 @@ import {
     RefreshCw,
     Crown,
     Shield,
-    Mail
+    Mail,
+    PieChart
 } from 'lucide-react';
 import AuthContext from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import api from '../../services/api';
+import DashboardCharts from '../../components/admin/DashboardCharts';
 
 const Dashboard = () => {
     const { user } = useContext(AuthContext);
@@ -173,6 +175,7 @@ const Dashboard = () => {
 
     const tabs = [
         { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+        { id: 'analytics', label: 'Analytics', icon: PieChart },
         { id: 'products', label: 'Products', icon: Package },
         { id: 'orders', label: 'Orders', icon: ShoppingCart },
         { id: 'users', label: 'Users', icon: Users },
@@ -336,6 +339,11 @@ const Dashboard = () => {
                                         )}
                                     </div>
                                 </div>
+                            )}
+
+                            {/* Analytics Tab */}
+                            {activeTab === 'analytics' && (
+                                <DashboardCharts />
                             )}
 
                             {/* Products Tab */}
@@ -537,8 +545,8 @@ const Dashboard = () => {
                                                                     onChange={(e) => updateUserRole(u.id, e.target.value)}
                                                                     disabled={u.id === user.id}
                                                                     className={`px-3 py-1 rounded-lg text-sm font-semibold bg-transparent border cursor-pointer ${u.role === 'ADMIN'
-                                                                            ? 'border-red-500 text-red-400'
-                                                                            : 'border-gray-600 text-gray-300'
+                                                                        ? 'border-red-500 text-red-400'
+                                                                        : 'border-gray-600 text-gray-300'
                                                                         } ${u.id === user.id ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                                 >
                                                                     <option value="USER" className="bg-gray-800">User</option>
@@ -550,10 +558,10 @@ const Dashboard = () => {
                                                                     value={u.subscription?.planName || 'FREE'}
                                                                     onChange={(e) => updateUserSubscription(u.id, e.target.value)}
                                                                     className={`px-3 py-1 rounded-lg text-sm font-semibold bg-transparent border cursor-pointer ${u.subscription?.planName === 'ENTERPRISE'
-                                                                            ? 'border-amber-500 text-amber-400'
-                                                                            : u.subscription?.planName === 'PRO'
-                                                                                ? 'border-purple-500 text-purple-400'
-                                                                                : 'border-gray-600 text-gray-400'
+                                                                        ? 'border-amber-500 text-amber-400'
+                                                                        : u.subscription?.planName === 'PRO'
+                                                                            ? 'border-purple-500 text-purple-400'
+                                                                            : 'border-gray-600 text-gray-400'
                                                                         }`}
                                                                 >
                                                                     <option value="FREE" className="bg-gray-800">Free</option>

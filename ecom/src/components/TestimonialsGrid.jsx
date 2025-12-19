@@ -63,7 +63,7 @@ const TestimonialsGrid = () => {
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         {testimonials.map((item) => (
-          <div key={item.id} className="bg-white rounded-[2rem] p-8 flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div key={item.id} className="bg-white rounded-[2rem] p-8 flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
 
             {/* Top Section: User Info & Content */}
             <div>

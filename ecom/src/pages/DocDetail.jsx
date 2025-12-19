@@ -160,19 +160,19 @@ const DocDetail = () => {
                             animate={{ opacity: 1, x: 0 }}
                             className="hidden lg:block w-64 flex-shrink-0"
                         >
-                            <div className="sticky top-24 bg-gray-100/50 rounded-xl p-4 border border-gray-200">
-                                <div className="flex items-center gap-2 mb-4 text-sm font-semibold text-gray-600">
+                            <div className="sticky top-24 bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                                <div className="flex items-center gap-2 mb-4 text-sm font-bold text-gray-900 uppercase tracking-wide">
                                     <List className="w-4 h-4" />
                                     Table of Contents
                                 </div>
-                                <nav className="space-y-2">
+                                <nav className="space-y-3">
                                     {doc.table_of_contents.map((item, index) => (
                                         <a
                                             key={index}
                                             href={`#${item.anchor}`}
-                                            className={`block text-sm hover:text-[#0055FF] transition-colors ${item.level === 1
-                                                ? "text-gray-300"
-                                                : "text-gray-500 pl-4"
+                                            className={`block text-sm transition-colors ${item.level === 1
+                                                ? "text-gray-900 font-medium hover:text-[#0055FF]"
+                                                : "text-gray-500 pl-4 hover:text-gray-900"
                                                 }`}
                                         >
                                             {item.title}
@@ -189,29 +189,29 @@ const DocDetail = () => {
                             <motion.article
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="prose prose-invert prose-lg max-w-none"
+                                className="prose prose-zinc prose-lg max-w-none"
                             >
-                                <div className="bg-gray-100/30 rounded-2xl p-8 border border-gray-200">
+                                <div className="bg-white rounded-[2rem] p-8 md:p-12 border border-gray-200 shadow-sm">
                                     <ReactMarkdown
                                         remarkPlugins={[remarkGfm]}
                                         components={{
-                                            h1: ({ children }) => <h1 className="text-3xl font-bold text-white mb-4 mt-6">{children}</h1>,
-                                            h2: ({ children }) => <h2 className="text-2xl font-bold text-white mb-3 mt-6">{children}</h2>,
-                                            h3: ({ children }) => <h3 className="text-xl font-bold text-white mb-2 mt-4">{children}</h3>,
-                                            p: ({ children }) => <p className="text-gray-300 mb-4 leading-relaxed">{children}</p>,
-                                            ul: ({ children }) => <ul className="list-disc list-inside text-gray-300 mb-4 space-y-2">{children}</ul>,
-                                            ol: ({ children }) => <ol className="list-decimal list-inside text-gray-300 mb-4 space-y-2">{children}</ol>,
-                                            li: ({ children }) => <li className="text-gray-300">{children}</li>,
+                                            h1: ({ children }) => <h1 className="text-4xl font-black text-gray-900 mb-6 mt-8 tracking-tight">{children}</h1>,
+                                            h2: ({ children }) => <h2 className="text-2xl font-bold text-gray-900 mb-4 mt-8">{children}</h2>,
+                                            h3: ({ children }) => <h3 className="text-xl font-bold text-gray-900 mb-3 mt-6">{children}</h3>,
+                                            p: ({ children }) => <p className="text-gray-600 mb-6 leading-relaxed bg-transparent">{children}</p>,
+                                            ul: ({ children }) => <ul className="list-disc list-inside text-gray-600 mb-6 space-y-2">{children}</ul>,
+                                            ol: ({ children }) => <ol className="list-decimal list-inside text-gray-600 mb-6 space-y-2">{children}</ol>,
+                                            li: ({ children }) => <li className="text-gray-600">{children}</li>,
                                             code: ({ inline, children }) => inline
-                                                ? <code className="bg-gray-700 text-blue-300 px-1.5 py-0.5 rounded text-sm">{children}</code>
-                                                : <code className="block bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm text-gray-300">{children}</code>,
-                                            pre: ({ children }) => <pre className="bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4">{children}</pre>,
-                                            blockquote: ({ children }) => <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600 my-4">{children}</blockquote>,
-                                            a: ({ href, children }) => <a href={href} className="text-[#0055FF] hover:text-blue-300 underline">{children}</a>,
-                                            strong: ({ children }) => <strong className="text-white font-semibold">{children}</strong>,
-                                            table: ({ children }) => <div className="overflow-x-auto mb-4"><table className="min-w-full border border-gray-200">{children}</table></div>,
-                                            th: ({ children }) => <th className="bg-gray-100 border border-gray-200 px-4 py-2 text-left text-white">{children}</th>,
-                                            td: ({ children }) => <td className="border border-gray-200 px-4 py-2 text-gray-300">{children}</td>,
+                                                ? <code className="bg-gray-100 text-[#0055FF] px-1.5 py-0.5 rounded text-sm font-semibold">{children}</code>
+                                                : <code className="block bg-gray-900 p-6 rounded-2xl overflow-x-auto text-sm text-gray-300 font-mono my-6 shadow-lg">{children}</code>,
+                                            pre: ({ children }) => <pre className="bg-transparent p-0 mb-6">{children}</pre>,
+                                            blockquote: ({ children }) => <blockquote className="border-l-4 border-[#0055FF] pl-6 italic text-gray-700 my-8 bg-blue-50/50 py-4 pr-4 rounded-r-xl">{children}</blockquote>,
+                                            a: ({ href, children }) => <a href={href} className="text-[#0055FF] hover:text-blue-700 underline font-medium">{children}</a>,
+                                            strong: ({ children }) => <strong className="text-gray-900 font-bold">{children}</strong>,
+                                            table: ({ children }) => <div className="overflow-x-auto mb-8 rounded-xl border border-gray-200"><table className="min-w-full">{children}</table></div>,
+                                            th: ({ children }) => <th className="bg-gray-50 border-b border-gray-200 px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{children}</th>,
+                                            td: ({ children }) => <td className="border-b border-gray-100 px-6 py-4 text-gray-600 text-sm">{children}</td>,
                                         }}
                                     >
                                         {doc.content_md || doc.content || ""}
@@ -220,19 +220,20 @@ const DocDetail = () => {
 
                                 {/* Download PDF */}
                                 {doc.pdf_url && (
-                                    <div className="mt-8 p-6 bg-[#0055FF] rounded-xl border border-blue-500/20">
-                                        <div className="flex items-center justify-between">
+                                    <div className="mt-8 p-8 bg-black rounded-[2rem] shadow-xl text-white overflow-hidden relative group">
+                                        <div className="absolute top-0 right-0 w-64 h-64 bg-gray-800 rounded-full blur-[100px] opacity-50 group-hover:opacity-70 transition-opacity"></div>
+                                        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                                             <div>
-                                                <h3 className="text-lg font-semibold mb-1">
+                                                <h3 className="text-xl font-bold mb-2 text-white">
                                                     Download PDF Version
                                                 </h3>
-                                                <p className="text-gray-600 text-sm">
-                                                    Take this guide offline
+                                                <p className="text-gray-400 text-sm">
+                                                    Get the complete offline guide with all resources.
                                                 </p>
                                             </div>
                                             <a
                                                 href={doc.pdf_url}
-                                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-medium transition-colors"
+                                                className="flex items-center gap-2 px-8 py-4 bg-white text-black hover:bg-gray-100 rounded-full font-bold transition-all transform hover:scale-105"
                                             >
                                                 <Download className="w-5 h-5" />
                                                 Download PDF
@@ -248,26 +249,26 @@ const DocDetail = () => {
                                 animate={{ opacity: 1, y: 0 }}
                             >
                                 {/* Preview Content */}
-                                <div className="bg-gray-100/30 rounded-2xl p-8 border border-gray-200 mb-8">
+                                <div className="bg-white rounded-[2rem] p-8 md:p-12 border border-gray-200 mb-8 shadow-sm">
                                     <div
-                                        className="prose prose-invert prose-lg max-w-none"
+                                        className="prose prose-zinc prose-lg max-w-none opacity-50 select-none pointer-events-none blur-[2px]"
                                         dangerouslySetInnerHTML={{
-                                            __html: doc.content_md?.replace(/\n/g, "<br />") || "",
+                                            __html: (doc.content_md?.slice(0, 1000) || "") + "...",
                                         }}
                                     />
                                 </div>
 
                                 {/* Blur Overlay with CTA */}
-                                <div className="relative">
-                                    <div className="absolute inset-0 bg-[#0055FF] ">
-                                    <div className="relative z-10 text-center py-16">
-                                        <div className="inline-block p-4 bg-gray-100/80 rounded-full mb-6">
-                                            <Lock className="w-10 h-10 text-[#0055FF]" />
+                                <div className="relative -mt-64 z-10">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#F5F5F7] via-[#F5F5F7]/95 to-transparent h-32 -top-32"></div>
+                                    <div className="text-center py-16 bg-[#F5F5F7]">
+                                        <div className="inline-block p-4 bg-white shadow-lg rounded-full mb-6 animate-bounce">
+                                            <Lock className="w-8 h-8 text-[#0055FF]" />
                                         </div>
-                                        <h2 className="text-3xl font-bold mb-4">
+                                        <h2 className="text-3xl font-black mb-4 text-gray-900">
                                             Unlock Full Documentation
                                         </h2>
-                                        <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                                        <p className="text-gray-600 mb-8 max-w-md mx-auto text-lg">
                                             Get instant access to this complete guide including code
                                             examples, best practices, and downloadable resources.
                                         </p>
@@ -275,7 +276,7 @@ const DocDetail = () => {
                                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                             <button
                                                 onClick={handlePurchase}
-                                                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#0055FF] rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/25 transition-all"
+                                                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#0055FF] text-white rounded-full font-bold hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-1"
                                             >
                                                 <ShoppingCart className="w-5 h-5" />
                                                 Purchase for ${doc.price}
@@ -284,21 +285,23 @@ const DocDetail = () => {
                                             {doc.requires_subscription && (
                                                 <Link
                                                     to="/pricing"
-                                                    className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gray-700 hover:bg-gray-600 rounded-xl font-semibold transition-colors"
+                                                    className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-black border border-gray-200 hover:bg-gray-50 rounded-full font-bold transition-colors"
                                                 >
                                                     Or Subscribe to Pro
                                                 </Link>
                                             )}
                                         </div>
 
-                                        <div className="flex items-center justify-center gap-6 mt-8 text-sm text-gray-600">
+                                        <div className="flex items-center justify-center gap-8 mt-10 text-sm text-gray-500 font-medium">
                                             {[
                                                 "Lifetime access",
                                                 "Free updates",
                                                 "Money-back guarantee",
                                             ].map((feature, i) => (
-                                                <span key={i} className="flex items-center gap-1">
-                                                    <Check className="w-4 h-4 text-green-400" />
+                                                <span key={i} className="flex items-center gap-2">
+                                                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                                        <Check className="w-3 h-3 text-green-600" />
+                                                    </div>
                                                     {feature}
                                                 </span>
                                             ))}
@@ -310,25 +313,25 @@ const DocDetail = () => {
 
                         {/* Related Docs */}
                         {doc.related_docs?.length > 0 && (
-                            <div className="mt-12">
-                                <h3 className="text-2xl font-bold mb-6">Related Documentation</h3>
-                                <div className="grid md:grid-cols-2 gap-4">
+                            <div className="mt-20">
+                                <h3 className="text-2xl font-bold mb-8 text-gray-900">Related Documentation</h3>
+                                <div className="grid md:grid-cols-2 gap-6">
                                     {doc.related_docs.map((relDoc) => (
                                         <Link
                                             key={relDoc._id}
                                             to={`/docs/${relDoc._id}`}
-                                            className="flex gap-4 p-4 bg-gray-100/50 rounded-xl border border-gray-200 hover:border-blue-500/50 transition-colors"
+                                            className="flex gap-6 p-6 bg-white rounded-[2rem] border border-gray-200 hover:border-[#0055FF]/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all group"
                                         >
                                             <img
                                                 src={relDoc.thumbnail}
                                                 alt={relDoc.title}
-                                                className="w-20 h-16 object-cover rounded-lg"
+                                                className="w-24 h-24 object-cover rounded-2xl shadow-sm group-hover:scale-105 transition-transform duration-500"
                                             />
                                             <div>
-                                                <h4 className="font-semibold hover:text-[#0055FF] transition-colors">
+                                                <h4 className="font-bold text-lg mb-2 text-gray-900 group-hover:text-[#0055FF] transition-colors leading-tight">
                                                     {relDoc.title}
                                                 </h4>
-                                                <p className="text-sm text-gray-600">{relDoc.slug}</p>
+                                                <p className="text-sm text-gray-500">{relDoc.slug}</p>
                                             </div>
                                         </Link>
                                     ))}
@@ -339,17 +342,17 @@ const DocDetail = () => {
 
                     {/* Right Sidebar - Purchase Card */}
                     <aside className="hidden xl:block w-80 flex-shrink-0">
-                        <div className="sticky top-24 bg-gray-100/50 rounded-2xl p-6 border border-gray-200">
-                            <div className="text-center mb-6">
-                                <div className="text-4xl font-bold mb-2">
+                        <div className="sticky top-24 bg-white rounded-[2rem] p-8 border border-gray-200 shadow-lg shadow-gray-200/50">
+                            <div className="text-center mb-8">
+                                <div className="text-4xl font-black mb-2 text-gray-900">
                                     {doc.price === 0 ? (
-                                        <span className="text-green-400">Free</span>
+                                        <span className="text-[#00C853]">Free</span>
                                     ) : (
                                         <span>${doc.discount_price || doc.price}</span>
                                     )}
                                 </div>
                                 {doc.discount_price && doc.discount_price < doc.price && (
-                                    <span className="text-gray-500 line-through">
+                                    <span className="text-gray-400 line-through font-medium">
                                         ${doc.price}
                                     </span>
                                 )}
@@ -358,35 +361,35 @@ const DocDetail = () => {
                             {!hasAccess && doc.price > 0 && (
                                 <button
                                     onClick={handlePurchase}
-                                    className="w-full py-4 bg-[#0055FF] rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/25 transition-all mb-4"
+                                    className="w-full py-4 bg-[#0055FF] text-white rounded-full font-bold hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-500/30 transition-all mb-4 transform hover:-translate-y-1"
                                 >
                                     Purchase Now
                                 </button>
                             )}
 
-                            <div className="flex gap-2 mb-6">
-                                <button className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl transition-colors flex items-center justify-center gap-2">
+                            <div className="flex gap-3 mb-8">
+                                <button className="flex-1 py-3 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm font-semibold text-gray-700">
                                     <Share2 className="w-4 h-4" />
                                     Share
                                 </button>
-                                <button className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl transition-colors flex items-center justify-center gap-2">
+                                <button className="flex-1 py-3 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm font-semibold text-gray-700">
                                     <Bookmark className="w-4 h-4" />
                                     Save
                                 </button>
                             </div>
 
-                            <div className="space-y-3 text-sm">
-                                <div className="flex justify-between text-gray-600">
+                            <div className="space-y-4 text-sm border-t border-gray-100 pt-6">
+                                <div className="flex justify-between text-gray-600 font-medium">
                                     <span>Reading time</span>
-                                    <span>{doc.reading_time_minutes} minutes</span>
+                                    <span className="text-gray-900">{doc.reading_time_minutes} minutes</span>
                                 </div>
-                                <div className="flex justify-between text-gray-600">
+                                <div className="flex justify-between text-gray-600 font-medium">
                                     <span>Difficulty</span>
-                                    <span className="capitalize">{doc.difficulty}</span>
+                                    <span className="capitalize text-gray-900">{doc.difficulty}</span>
                                 </div>
-                                <div className="flex justify-between text-gray-600">
+                                <div className="flex justify-between text-gray-600 font-medium">
                                     <span>Updated</span>
-                                    <span>
+                                    <span className="text-gray-900">
                                         {new Date(doc.createdAt).toLocaleDateString()}
                                     </span>
                                 </div>

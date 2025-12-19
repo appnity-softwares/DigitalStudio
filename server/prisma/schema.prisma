@@ -89,11 +89,14 @@ model User {
   subscription     Subscription?
   orders           Order[]
   apiKeys          ApiKey[]
+  reviews          Review[]
+  wishlist         Wishlist?
   premiumDocsAuthored PremiumDoc[] @relation("AuthoredDocs")
   
   // Many-to-many for purchases
   purchasedProducts Product[]    @relation("UserPurchasedProducts")
   purchasedDocs     PremiumDoc[] @relation("UserPurchasedDocs")
+  templateRequests  TemplateRequest[]
   
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
@@ -192,6 +195,8 @@ model Product {
   
   // Relations
   orderItems      OrderItem[]
+  reviews         Review[]
+  wishlistItems   WishlistItem[]
   purchasedBy     User[]       @relation("UserPurchasedProducts")
   relatedDocs     PremiumDoc[] @relation("ProductRelatedDocs")
   
@@ -287,6 +292,8 @@ model PremiumDoc {
   
   // Relations
   orderItems          OrderItem[]
+  reviews             Review[]
+  wishlistItems       WishlistItem[]
   purchasedBy         User[]     @relation("UserPurchasedDocs")
   relatedProducts     Product[]  @relation("ProductRelatedDocs")
   
@@ -374,4 +381,263 @@ model ApiKey {
   
   @@unique([keyPrefix, keyHash])
   @@index([userId, toolId])
+}
+
+// ==================== REVIEW ====================
+
+model Review {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  premiumDocId String?
+  premiumDoc   PremiumDoc? @relation(fields: [premiumDocId], references: [id], onDelete: Cascade)
+  
+  rating      Int      // 1-5 stars
+  title       String?
+  comment     String   @db.Text
+  
+  isVerifiedPurchase Boolean @default(false)
+  isApproved  Boolean  @default(true)
+  helpfulCount Int     @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([userId, productId])
+  @@index([productId, rating])
+  @@index([premiumDocId, rating])
+}
+
+// ==================== COUPON ====================
+
+model Coupon {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  description     String?
+  
+  discountType    DiscountType @default(PERCENTAGE)
+  discountValue   Float     // Percentage (0-100) or fixed amount
+  
+  minOrderValue   Float?    // Minimum order value required
+  maxDiscount     Float?    // Maximum discount cap for percentage
+  
+  usageLimit      Int?      // Total usage limit
+  usageCount      Int       @default(0)
+  perUserLimit    Int       @default(1)
+  
+  validFrom       DateTime  @default(now())
+  validUntil      DateTime?
+  
+  isActive        Boolean   @default(true)
+  applicableTo    String[]  // Product IDs or categories, empty = all
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  usages          CouponUsage[]
+}
+
+model CouponUsage {
+  id        String   @id @default(cuid())
+  couponId  String
+  coupon    Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  userId    String
+  orderId   String?
+  
+  discountApplied Float
+  usedAt    DateTime @default(now())
+  
+  @@index([couponId, userId])
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+// ==================== WEBHOOK LOG ====================
+
+model WebhookLog {
+  id            String   @id @default(cuid())
+  provider      String   // razorpay, stripe, etc.
+  eventType     String   // payment.captured, refund.processed, etc.
+  eventId       String?  @unique
+  
+  payload       Json
+  headers       Json?
+  
+  status        WebhookStatus @default(RECEIVED)
+  errorMessage  String?
+  
+  processedAt   DateTime?
+  createdAt     DateTime @default(now())
+  
+  @@index([provider, eventType])
+  @@index([createdAt])
+}
+
+enum WebhookStatus {
+  RECEIVED
+  PROCESSING
+  SUCCESS
+  FAILED
+  IGNORED
+}
+
+// ==================== ANALYTICS ====================
+
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  eventType   String   // page_view, product_view, purchase, api_call, etc.
+  eventData   Json?
+  
+  userId      String?
+  sessionId   String?
+  ipAddress   String?
+  userAgent   String?
+  
+  productId   String?
+  toolId      String?
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([eventType, createdAt])
+  @@index([userId, createdAt])
+  @@index([productId])
+}
+
+// ==================== WISHLIST ====================
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  items     WishlistItem[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WishlistItem {
+  id          String   @id @default(cuid())
+  wishlistId  String
+  wishlist    Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  premiumDocId String?
+  premiumDoc   PremiumDoc? @relation(fields: [premiumDocId], references: [id], onDelete: Cascade)
+  
+  addedAt     DateTime @default(now())
+  
+  @@unique([wishlistId, productId])
+  @@unique([wishlistId, premiumDocId])
+  @@index([wishlistId])
+}
+
+// ==================== API CALL LOG ====================
+
+model ApiCallLog {
+  id            String   @id @default(cuid())
+  apiKeyId      String
+  toolId        String
+  
+  endpoint      String
+  method        String
+  statusCode    Int
+  
+  requestBody   Json?
+  responseBody  Json?
+  
+  responseTimeMs Int
+  ipAddress     String?
+  userAgent     String?
+  
+  createdAt     DateTime @default(now())
+  
+  @@index([apiKeyId, createdAt])
+  @@index([toolId, createdAt])
+  @@index([createdAt])
+}
+
+// ==================== DOWNLOAD LOG ====================
+
+model DownloadLog {
+  id          String   @id @default(cuid())
+  userId      String
+  productId   String
+  orderId     String?
+  
+  ipAddress   String?
+  userAgent   String?
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([userId, productId])
+  @@index([createdAt])
+}
+
+// ==================== INVOICE ====================
+
+model Invoice {
+  id            String   @id @default(cuid())
+  orderId       String   @unique
+  userId        String
+  
+  invoiceNumber String   @unique
+  pdfUrl        String?
+  
+  subtotal      Float
+  discount      Float    @default(0)
+  tax           Float    @default(0)
+  total         Float
+  
+  billingName   String?
+  billingEmail  String?
+  billingAddress Json?
+  
+  issuedAt      DateTime @default(now())
+  
+  @@index([userId])
+  @@index([invoiceNumber])
+}
+
+// ==================== TEMPLATE REQUEST ====================
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+}
+
+model TemplateRequest {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title       String
+  description String        @db.Text
+  category    String?
+  techStack   String[]
+  
+  votes       Int           @default(0)
+  voters      String[]      // Array of user IDs who voted
+  
+  status      RequestStatus @default(PENDING)
+  adminNotes  String?
+  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+  @@index([votes])
 }

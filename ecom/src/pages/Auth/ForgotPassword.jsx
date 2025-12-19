@@ -65,25 +65,25 @@ const ForgotPassword = () => {
     // If we have a token, show reset password form
     if (token) {
         return (
-            <div className="min-h-screen bg-[#0055FF] flex items-center justify-center px-4">
+            <div className="min-h-screen bg-[#F5F5F7] flex items-center justify-center px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="w-full max-w-md"
                 >
-                    <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-8 border border-gray-700">
+                    <div className="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-xl shadow-blue-500/5">
                         {passwordReset ? (
                             <div className="text-center">
-                                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Check className="w-8 h-8 text-green-400" />
+                                <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-100">
+                                    <Check className="w-8 h-8 text-green-500" />
                                 </div>
-                                <h2 className="text-2xl font-bold text-white mb-2">Password Reset!</h2>
-                                <p className="text-gray-400 mb-6">Redirecting to login...</p>
+                                <h2 className="text-2xl font-black text-black mb-2 tracking-tight">Password Reset!</h2>
+                                <p className="text-gray-500 font-medium mb-6">Redirecting to login...</p>
                             </div>
                         ) : (
                             <>
-                                <h2 className="text-2xl font-bold text-white mb-2">Set New Password</h2>
-                                <p className="text-gray-400 mb-6">Enter your new password below</p>
+                                <h2 className="text-2xl font-black text-black mb-2 tracking-tight">Set New Password</h2>
+                                <p className="text-gray-500 font-medium mb-6">Enter your new password below</p>
 
                                 <form onSubmit={handleResetPassword} className="space-y-4">
                                     <div className="relative">
@@ -93,7 +93,7 @@ const ForgotPassword = () => {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="New Password"
-                                            className="w-full pl-12 pr-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 text-white"
+                                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-black font-medium"
                                             required
                                         />
                                     </div>
@@ -104,14 +104,14 @@ const ForgotPassword = () => {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             placeholder="Confirm Password"
-                                            className="w-full pl-12 pr-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 text-white"
+                                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-black font-medium"
                                             required
                                         />
                                     </div>
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full py-3 bg-[#0055FF] rounded-xl font-semibold text-white hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                                        className="w-full py-3 bg-[#0055FF] rounded-xl font-bold text-white hover:shadow-lg transition-all flex items-center justify-center gap-2"
                                     >
                                         {loading ? (
                                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -130,30 +130,30 @@ const ForgotPassword = () => {
 
     // Show forgot password form
     return (
-        <div className="min-h-screen bg-[#0055FF] flex items-center justify-center px-4">
+        <div className="min-h-screen bg-[#F5F5F7] flex items-center justify-center px-4">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="w-full max-w-md"
             >
-                <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-8 border border-gray-700">
+                <div className="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-xl shadow-blue-500/5">
                     {emailSent ? (
                         <div className="text-center">
-                            <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Mail className="w-8 h-8 text-blue-400" />
+                            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-100">
+                                <Mail className="w-8 h-8 text-[#0055FF]" />
                             </div>
-                            <h2 className="text-2xl font-bold text-white mb-2">Check Your Email</h2>
-                            <p className="text-gray-400 mb-6">
-                                We've sent a password reset link to <span className="text-white">{email}</span>
+                            <h2 className="text-2xl font-black text-black mb-2 tracking-tight">Check Your Email</h2>
+                            <p className="text-gray-500 font-medium mb-6">
+                                We've sent a password reset link to <span className="text-black font-bold">{email}</span>
                             </p>
-                            <Link to="/login" className="text-blue-400 hover:text-blue-300">
+                            <Link to="/login" className="text-[#0055FF] font-bold hover:underline">
                                 Back to Login
                             </Link>
                         </div>
                     ) : (
                         <>
-                            <h2 className="text-2xl font-bold text-white mb-2">Forgot Password?</h2>
-                            <p className="text-gray-400 mb-6">
+                            <h2 className="text-2xl font-black text-black mb-2 tracking-tight">Forgot Password?</h2>
+                            <p className="text-gray-500 font-medium mb-6">
                                 Enter your email and we'll send you a reset link
                             </p>
 
@@ -165,14 +165,14 @@ const ForgotPassword = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         placeholder="Email Address"
-                                        className="w-full pl-12 pr-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 text-white"
+                                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-black font-medium"
                                         required
                                     />
                                 </div>
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full py-3 bg-[#0055FF] rounded-xl font-semibold text-white hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-3 bg-[#0055FF] rounded-xl font-bold text-white hover:shadow-lg transition-all flex items-center justify-center gap-2"
                                 >
                                     {loading ? (
                                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -186,7 +186,7 @@ const ForgotPassword = () => {
                             </form>
 
                             <div className="mt-6 text-center">
-                                <Link to="/login" className="text-gray-400 hover:text-white">
+                                <Link to="/login" className="text-gray-500 font-medium hover:text-black transition-colors">
                                     Back to Login
                                 </Link>
                             </div>

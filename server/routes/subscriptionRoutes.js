@@ -15,6 +15,7 @@ router.get('/plans', getPlans);
 
 // Private
 router.get('/my', protect, getMySubscription);
+router.get('/current', protect, getMySubscription); // Alias for frontend
 router.post('/create', protect, createSubscription);
 router.post('/cancel', protect, cancelSubscription);
 router.post('/pause', protect, pauseSubscription);

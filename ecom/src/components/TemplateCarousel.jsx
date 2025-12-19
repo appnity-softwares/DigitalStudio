@@ -92,7 +92,7 @@ const TemplateCarousel = () => {
               {/* 3D Shapes Simulation */}
               <div className="mt-10 flex gap-4 opacity-80">
                 <div className="w-16 h-16 rounded-full border-4 border-blue-500/50"></div>
-                <div className="w-16 h-16 rounded-lg bg-[#0055FF]
+                <div className="w-16 h-16 rounded-lg bg-[#0055FF]"></div>
               </div>
             </div>
           </div>

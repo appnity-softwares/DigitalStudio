@@ -236,6 +236,74 @@ const emailTemplates = {
             </div>
         </body>
         </html>
+    `,
+
+    subscriptionReminder: (subscription, daysLeft) => `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; background: #f5f5f5; }
+                .wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+                .card { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .logo { font-size: 24px; font-weight: bold; color: #0055FF; margin-bottom: 30px; }
+                .warning { background: #fef3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 8px; }
+                .button { display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #0055FF 0%, #7C3AED 100%); color: white !important; text-decoration: none; border-radius: 12px; font-weight: 600; margin: 20px 0; }
+            </style>
+        </head>
+        <body>
+            <div class="wrapper">
+                <div class="card">
+                    <div class="logo">CodeStudio</div>
+                    <h1>Subscription Renewal Reminder ⏰</h1>
+                    
+                    <div class="warning">
+                        <strong>Heads up!</strong> Your ${subscription.planName} subscription will renew in <strong>${daysLeft} days</strong>.
+                    </div>
+                    
+                    <p>Your subscription will automatically renew on <strong>${new Date(subscription.endDate).toLocaleDateString()}</strong>.</p>
+                    
+                    <p>If you wish to cancel or modify your subscription, please do so before the renewal date to avoid charges.</p>
+                    
+                    <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/profile/subscription" class="button">Manage Subscription</a>
+                </div>
+            </div>
+        </body>
+        </html>
+    `,
+
+    refundConfirmation: (order, refundAmount) => `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; background: #f5f5f5; }
+                .wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+                .card { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .logo { font-size: 24px; font-weight: bold; color: #0055FF; margin-bottom: 30px; }
+                .success { background: #dcfce7; border-left: 4px solid #22c55e; padding: 15px; margin: 20px 0; border-radius: 8px; }
+            </style>
+        </head>
+        <body>
+            <div class="wrapper">
+                <div class="card">
+                    <div class="logo">CodeStudio</div>
+                    <h1>Refund Processed ✓</h1>
+                    
+                    <div class="success">
+                        Your refund of <strong>$${refundAmount}</strong> has been processed successfully.
+                    </div>
+                    
+                    <p><strong>Order ID:</strong> ${order.id?.substring(0, 8)}</p>
+                    <p>The amount will be credited to your original payment method within 5-7 business days.</p>
+                    
+                    <p style="color: #666; font-size: 14px;">If you have any questions, please contact our support team.</p>
+                </div>
+            </div>
+        </body>
+        </html>
     `
 };
 

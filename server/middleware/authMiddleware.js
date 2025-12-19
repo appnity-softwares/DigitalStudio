@@ -86,4 +86,50 @@ const admin = (req, res, next) => {
     }
 };
 
-module.exports = { protect, optionalAuth, admin };
+// Validate API Key for SaaS tools
+const validateApiKey = asyncHandler(async (req, res, next) => {
+    const apiKey = req.headers['x-api-key'] || req.query.apiKey;
+
+    if (!apiKey) {
+        res.status(401);
+        throw new Error('API key is required');
+    }
+
+    // Find the API key in database
+    const keyRecord = await prisma.apiKey.findFirst({
+        where: {
+            key: apiKey,
+            isActive: true,
+            OR: [
+                { expiresAt: null },
+                { expiresAt: { gt: new Date() } }
+            ]
+        },
+        include: {
+            user: {
+                select: { id: true, name: true, email: true }
+            }
+        }
+    });
+
+    if (!keyRecord) {
+        res.status(401);
+        throw new Error('Invalid or expired API key');
+    }
+
+    // Update usage count
+    await prisma.apiKey.update({
+        where: { id: keyRecord.id },
+        data: {
+            usageCount: { increment: 1 },
+            lastUsedAt: new Date()
+        }
+    });
+
+    req.user = keyRecord.user;
+    req.apiKey = keyRecord;
+    next();
+});
+
+module.exports = { protect, optionalAuth, admin, validateApiKey };
+

@@ -23,7 +23,7 @@ const FeaturesGrid = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {/* CARD 1: White Card (Bottom-Right Decoration) */}
-          <div className="bg-white rounded-[2.5rem] p-8 md:p-10 flex flex-col justify-between relative overflow-hidden h-[500px] group hover:shadow-xl transition-all duration-300">
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-10 flex flex-col justify-between relative overflow-hidden h-[500px] group hover:shadow-xl transition-all duration-300 border border-gray-100">
 
             {/* Content */}
             <div className="relative z-10 flex flex-col items-start gap-6">
@@ -55,7 +55,7 @@ const FeaturesGrid = () => {
 
 
           {/* CARD 2: White Card (Top-Right Decoration) */}
-          <div className="bg-white rounded-[2.5rem] p-8 md:p-10 flex flex-col relative overflow-hidden h-[500px] group hover:shadow-xl transition-all duration-300">
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-10 flex flex-col relative overflow-hidden h-[500px] group hover:shadow-xl transition-all duration-300 border border-gray-100">
 
             {/* Decoration Shape (Top Right) */}
             <div className="absolute -top-10 -right-10 w-64 h-64 bg-gray-100 rounded-[3rem] transform -rotate-12 opacity-80 z-0 group-hover:scale-105 transition-transform duration-500" />

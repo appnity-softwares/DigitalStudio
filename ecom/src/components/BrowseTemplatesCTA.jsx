@@ -27,7 +27,7 @@ const BrowseTemplatesCTA = () => {
             {/* Bottom Image: Purple UI Card */}
             <div className="h-1/2 w-full bg-[#5D5FEF] rounded-2xl overflow-hidden relative flex items-center justify-center group p-4">
               {/* Abstract UI Elements representing the image content */}
-              <div className="absolute inset-0 bg-[#0055FF]
+              <div className="absolute inset-0 bg-[#0055FF]"></div>
               <div className="relative z-10 grid grid-cols-2 gap-2 w-full max-w-[150px]">
                 <div className="bg-white/20 backdrop-blur-sm rounded-lg h-16 w-full"></div>
                 <div className="bg-white/20 backdrop-blur-sm rounded-lg h-16 w-full"></div>

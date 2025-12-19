@@ -55,7 +55,7 @@ const EcosystemSection = ({ product }) => {
     ];
 
     return (
-        <div className="bg-[#0055FF] py-20">
+        <div className="bg-[#F5F5F7] py-20 border-t border-gray-200/50">
             <div className="max-w-7xl mx-auto px-6">
                 {/* Section Header */}
                 <motion.div
@@ -64,14 +64,14 @@ const EcosystemSection = ({ product }) => {
                     viewport={{ once: true }}
                     className="text-center mb-12"
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-[#0055FF] text-sm mb-6">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-full text-[#0055FF] text-sm mb-6 font-semibold">
                         <Zap className="w-4 h-4" />
                         Ecosystem Resources
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                    <h2 className="text-3xl md:text-5xl font-black text-black tracking-tight mb-4">
                         Power Up Your Project
                     </h2>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
+                    <p className="text-gray-500 max-w-2xl mx-auto text-lg font-medium">
                         This template connects seamlessly with our Premium Docs and Developer APIs
                     </p>
                 </motion.div>
@@ -82,43 +82,43 @@ const EcosystemSection = ({ product }) => {
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="bg-white shadow-sm rounded-2xl p-6 border border-gray-200"
+                        className="bg-white shadow-sm rounded-[2rem] p-8 border border-gray-100 flex flex-col h-full"
                     >
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-3 bg-purple-500/20 rounded-xl">
-                                <BookOpen className="w-6 h-6 text-purple-400" />
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="p-4 bg-purple-50 rounded-2xl">
+                                <BookOpen className="w-8 h-8 text-purple-600" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold text-white">Premium Docs</h3>
-                                <p className="text-gray-600 text-sm">Deep-dive documentation for this template</p>
+                                <h3 className="text-2xl font-bold text-black">Premium Docs</h3>
+                                <p className="text-gray-500 font-medium">Deep-dive documentation</p>
                             </div>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-4 flex-1">
                             {relatedDocs.map((doc, index) => (
                                 <Link
                                     key={index}
                                     to={`/docs/${doc.slug}`}
-                                    className="block p-4 bg-gray-100 rounded-xl hover:bg-gray-700/50 transition-colors group"
+                                    className="block p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group border border-gray-100 hover:border-purple-200"
                                 >
                                     <div className="flex items-start gap-4">
-                                        <div className="p-2 bg-gray-700 rounded-lg">
-                                            <doc.icon className="w-5 h-5 text-gray-300" />
+                                        <div className="p-2 bg-white rounded-lg shadow-sm border border-gray-100">
+                                            <doc.icon className="w-5 h-5 text-gray-700" />
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2">
-                                                <h4 className="font-semibold text-white group-hover:text-purple-400 transition-colors">
+                                                <h4 className="font-bold text-black group-hover:text-purple-600 transition-colors">
                                                     {doc.title}
                                                 </h4>
                                                 {doc.isPro && (
-                                                    <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded-full">
+                                                    <span className="px-2 py-0.5 bg-purple-100 text-purple-600 text-[10px] font-bold uppercase tracking-wider rounded-full">
                                                         Pro
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-sm text-gray-600">{doc.description}</p>
+                                            <p className="text-sm text-gray-500 font-medium mt-1">{doc.description}</p>
                                         </div>
-                                        <ChevronRight className="w-5 h-5 text-gray-500 group-hover:text-purple-400 group-hover:translate-x-1 transition-all" />
+                                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-purple-600 group-hover:translate-x-1 transition-all" />
                                     </div>
                                 </Link>
                             ))}
@@ -126,7 +126,7 @@ const EcosystemSection = ({ product }) => {
 
                         <Link
                             to="/docs"
-                            className="mt-6 flex items-center justify-center gap-2 w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors font-semibold"
+                            className="mt-8 flex items-center justify-center gap-2 w-full py-4 bg-black hover:bg-gray-800 text-white rounded-xl transition-all font-bold shadow-lg shadow-black/10"
                         >
                             <BookOpen className="w-4 h-4" />
                             Explore All Docs
@@ -138,43 +138,43 @@ const EcosystemSection = ({ product }) => {
                         initial={{ opacity: 0, x: 20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="bg-white shadow-sm rounded-2xl p-6 border border-gray-200"
+                        className="bg-white shadow-sm rounded-[2rem] p-8 border border-gray-100 flex flex-col h-full"
                     >
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-3 bg-blue-500/20 rounded-xl">
-                                <Code className="w-6 h-6 text-[#0055FF]" />
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="p-4 bg-blue-50 rounded-2xl">
+                                <Code className="w-8 h-8 text-[#0055FF]" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold text-white">Developer APIs</h3>
-                                <p className="text-gray-600 text-sm">Supercharge your project with our APIs</p>
+                                <h3 className="text-2xl font-bold text-black">Developer APIs</h3>
+                                <p className="text-gray-500 font-medium">Supercharge your project</p>
                             </div>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-4 flex-1">
                             {relatedTools.map((tool, index) => (
                                 <Link
                                     key={index}
                                     to={`/saas`}
-                                    className="block p-4 bg-gray-100 rounded-xl hover:bg-gray-700/50 transition-colors group"
+                                    className="block p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group border border-gray-100 hover:border-blue-200"
                                 >
                                     <div className="flex items-start gap-4">
-                                        <div className="p-2 bg-gray-700 rounded-lg text-2xl">
+                                        <div className="p-2 bg-white rounded-lg shadow-sm border border-gray-100 text-xl">
                                             {tool.icon}
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2">
-                                                <h4 className="font-semibold text-white group-hover:text-[#0055FF] transition-colors">
+                                                <h4 className="font-bold text-black group-hover:text-[#0055FF] transition-colors">
                                                     {tool.name}
                                                 </h4>
                                                 {tool.isFree && (
-                                                    <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full">
-                                                        Free Tier
+                                                    <span className="px-2 py-0.5 bg-green-100 text-green-600 text-[10px] font-bold uppercase tracking-wider rounded-full">
+                                                        Free
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-sm text-gray-600">{tool.description}</p>
+                                            <p className="text-sm text-gray-500 font-medium mt-1">{tool.description}</p>
                                         </div>
-                                        <ChevronRight className="w-5 h-5 text-gray-500 group-hover:text-[#0055FF] group-hover:translate-x-1 transition-all" />
+                                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-[#0055FF] group-hover:translate-x-1 transition-all" />
                                     </div>
                                 </Link>
                             ))}
@@ -182,7 +182,7 @@ const EcosystemSection = ({ product }) => {
 
                         <Link
                             to="/saas"
-                            className="mt-6 flex items-center justify-center gap-2 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors font-semibold"
+                            className="mt-8 flex items-center justify-center gap-2 w-full py-4 bg-[#0055FF] hover:bg-blue-600 text-white rounded-xl transition-all font-bold shadow-lg shadow-blue-500/20"
                         >
                             <Code className="w-4 h-4" />
                             Explore All APIs
@@ -190,36 +190,42 @@ const EcosystemSection = ({ product }) => {
                     </motion.div>
                 </div>
 
-                {/* CTA Banner */}
+                {/* CTA Banner - Premium White Card Style */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="mt-12 bg-[#0055FF] rounded-2xl p-8 border border-blue-500/20 text-center"
+                    className="mt-12 bg-white rounded-[2.5rem] p-12 border border-blue-100 shadow-xl shadow-blue-500/5 relative overflow-hidden text-center"
                 >
-                    <div className="flex items-center justify-center gap-3 mb-4">
-                        <Star className="w-6 h-6 text-yellow-400" />
-                        <span className="text-yellow-400 font-semibold">Pro Subscription</span>
-                    </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">
-                        Unlock Everything with Pro
-                    </h3>
-                    <p className="text-gray-600 mb-6 max-w-lg mx-auto">
-                        Get unlimited access to all templates, premium docs, SaaS APIs, and priority support
-                    </p>
-                    <div className="flex items-center justify-center gap-4">
-                        <Link
-                            to="/app-developers"
-                            className="px-6 py-3 bg-[#0055FF] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/20 transition-all"
-                        >
-                            View Pro Plans
-                        </Link>
-                        <Link
-                            to="/app-developers"
-                            className="px-6 py-3 border border-gray-600 text-gray-300 rounded-xl font-semibold hover:bg-gray-100 transition-colors"
-                        >
-                            Learn More
-                        </Link>
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-[80px] opacity-60 pointer-events-none"></div>
+
+                    <div className="relative z-10 flex flex-col items-center">
+                        <div className="inline-flex items-center gap-2 bg-yellow-50 text-yellow-600 px-4 py-1.5 rounded-full text-sm font-bold mb-6 border border-yellow-100">
+                            <Star className="w-4 h-4 fill-current" />
+                            Pro Subscription
+                        </div>
+
+                        <h3 className="text-3xl md:text-4xl font-black text-black mb-4 tracking-tight">
+                            Unlock Everything with Pro
+                        </h3>
+                        <p className="text-gray-500 mb-8 max-w-xl mx-auto text-lg leading-relaxed">
+                            Get unlimited access to all templates, premium docs, SaaS APIs, and priority support.
+                        </p>
+
+                        <div className="flex flex-wrap items-center justify-center gap-4">
+                            <Link
+                                to="/app-developers"
+                                className="px-8 py-4 bg-[#0055FF] text-white rounded-full font-bold hover:shadow-lg hover:shadow-blue-500/20 transition-all hover:-translate-y-1"
+                            >
+                                View Pro Plans
+                            </Link>
+                            <Link
+                                to="/app-developers"
+                                className="px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-full font-bold hover:bg-gray-50 transition-all"
+                            >
+                                Learn More
+                            </Link>
+                        </div>
                     </div>
                 </motion.div>
             </div>

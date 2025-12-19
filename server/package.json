@@ -28,13 +28,17 @@
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.3.3",
         "multer": "^2.0.2",
+        "node-vibrant": "^4.0.3",
         "nodemailer": "^7.0.11",
         "passport": "^0.7.0",
         "passport-github2": "^0.1.12",
         "passport-google-oauth20": "^2.0.0",
         "passport-jwt": "^4.0.1",
+        "pdfkit": "^0.17.2",
         "prisma": "^5.22.0",
-        "razorpay": "^2.9.6"
+        "puppeteer": "^24.33.0",
+        "razorpay": "^2.9.6",
+        "sharp": "^0.34.5"
     },
     "devDependencies": {
         "nodemon": "^3.1.0"

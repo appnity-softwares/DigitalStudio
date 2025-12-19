@@ -1,270 +1,171 @@
-import React, { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useState, useMemo, useContext } from "react";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-    BookOpen,
-    Clock,
-    Tag,
-    Search,
-    Filter,
-    ChevronRight,
-    Star,
-    Lock,
-    Eye,
+    BookOpen, Clock, ChevronRight, Lock, Eye, Award,
+    Star, Crown, Calendar, User, ArrowRight
 } from "lucide-react";
-import { getDocs } from "../services/docsService";
+import { useDocs } from "../hooks/useQueries";
+import AuthContext from "../context/AuthContext";
 
 const Docs = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [docs, setDocs] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [searchQuery, setSearchQuery] = useState("");
+    const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [selectedCategory, setSelectedCategory] = useState(
         searchParams.get("category") || ""
     );
     const [selectedDifficulty, setSelectedDifficulty] = useState("");
 
-    useEffect(() => {
-        fetchDocs();
-    }, [selectedCategory, selectedDifficulty]);
+    // React Query hook
+    const { data: docsData, isLoading: loading } = useDocs({
+        category: selectedCategory,
+        page: 1,
+        limit: 100
+    });
 
-    const fetchDocs = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await getDocs();
-            // Defensive: ensure response is an array
-            const docsArray = Array.isArray(response) ? response : [];
-            setDocs(docsArray);
-            // Extract categories from docs
-            const uniqueCategories = [...new Set(docsArray.map(d => d.category).filter(Boolean))];
-            setCategories(uniqueCategories.map(name => ({ name, count: docsArray.filter(d => d.category === name).length })));
-        } catch (err) {
-            console.error("Error fetching docs:", err);
-            setError(err.message);
-            // Fallback to demo data
-            setDocs(demoDocs);
-            setCategories([
-                { name: "React Native", count: 1 },
-                { name: "Architecture", count: 1 },
-                { name: "React", count: 1 },
-                { name: "Next.js", count: 1 },
-            ]);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // Process docs data - no demo data
+    const docs = useMemo(() => {
+        const data = docsData?.docs || docsData || [];
+        return Array.isArray(data) ? data : [];
+    }, [docsData]);
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        fetchDocs();
-    };
+    // Filter by difficulty
+    const filteredDocs = useMemo(() => {
+        return docs.filter(doc => {
+            if (selectedDifficulty && doc.difficulty !== selectedDifficulty) return false;
+            return true;
+        });
+    }, [docs, selectedDifficulty]);
+
+    // Extract categories from docs
+    const categories = useMemo(() => {
+        const uniqueCategories = [...new Set(docs.map(d => d.category).filter(Boolean))];
+        return uniqueCategories.map(name => ({
+            name,
+            count: docs.filter(d => d.category === name).length
+        }));
+    }, [docs]);
 
     const difficulties = ["beginner", "intermediate", "advanced"];
 
-    const difficultyColors = {
-        beginner: "bg-green-500/20 text-green-400",
-        intermediate: "bg-yellow-500/20 text-yellow-400",
-        advanced: "bg-red-500/20 text-red-400",
-    };
+    // Check if user has active subscription
+    const hasSubscription = user?.subscription?.status === 'active';
 
     return (
-        <div className="min-h-screen bg-[#0055FF] text-white py-12">
-            <div className="max-w-7xl mx-auto px-4">
+        <div className="page-container pt-28">
+            <div className="container max-w-7xl mx-auto px-6">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-12"
+                    className="mb-16"
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-400 text-sm mb-6">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent-subtle)] rounded-full text-[var(--accent-primary)] text-sm font-medium mb-6">
                         <BookOpen className="w-4 h-4" />
-                        Premium Documentation
+                        Developer Blog
                     </div>
-                    <h1 className="text-5xl font-bold mb-4">
-                        <span className="bg-[#0055FF] ">
-                            Premium Docs
-                        </span>
+                    <h1 className="text-display text-[var(--text-primary)] mb-6">
+                        Developer Insights
                     </h1>
-                    <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                        Deep-dive technical documentation, architecture guides, and
-                        production-ready blueprints
+                    <p className="text-body text-lg max-w-2xl">
+                        Technical articles, tutorials, and best practices from our team
+                        and community developers. Subscribe for full access.
                     </p>
                 </motion.div>
 
-                {/* Search & Filters */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="flex flex-col gap-6 mb-8"
-                >
-                    {/* Category Filters */}
-                    <div className="flex flex-wrap gap-3 items-center justify-center">
+                {/* Subscription CTA Banner */}
+                {!hasSubscription && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="glass-card p-8 mb-12 flex flex-col md:flex-row items-center justify-between gap-6"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-14 h-14 rounded-2xl bg-[var(--accent-subtle)] flex items-center justify-center">
+                                <Crown className="w-7 h-7 text-[var(--accent-primary)]" />
+                            </div>
+                            <div>
+                                <h3 className="text-title text-[var(--text-primary)]">
+                                    Unlock All Articles
+                                </h3>
+                                <p className="text-body text-sm">
+                                    Subscribe to access premium tutorials, guides, and exclusive content.
+                                </p>
+                            </div>
+                        </div>
+                        <Link
+                            to="/pricing"
+                            className="btn-primary flex items-center gap-2"
+                        >
+                            Subscribe Now
+                            <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    </motion.div>
+                )}
+
+                {/* Category Filters */}
+                <div className="flex flex-wrap gap-3 mb-8">
+                    <button
+                        onClick={() => setSelectedCategory("")}
+                        className={`pill pill-hover ${selectedCategory === "" ? "pill-active" : ""}`}
+                    >
+                        All Topics
+                    </button>
+                    {categories.map((cat) => (
                         <button
-                            onClick={() => setSelectedCategory("")}
-                            className={`px-4 py-2.5 rounded-full text-sm font-semibold transition-all shadow-sm ${selectedCategory === ""
-                                ? "bg-black text-white shadow-md"
-                                : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                            key={cat.name}
+                            onClick={() => setSelectedCategory(cat.name)}
+                            className={`pill pill-hover ${selectedCategory === cat.name ? "pill-active" : ""}`}
+                        >
+                            {cat.name}
+                            <span className="text-xs opacity-60 ml-1">({cat.count})</span>
+                        </button>
+                    ))}
+                </div>
+
+                {/* Difficulty Filter */}
+                <div className="flex items-center gap-4 mb-12">
+                    <span className="text-caption uppercase tracking-wider">Level:</span>
+                    {difficulties.map((diff) => (
+                        <button
+                            key={diff}
+                            onClick={() => setSelectedDifficulty(selectedDifficulty === diff ? "" : diff)}
+                            className={`text-sm capitalize font-medium transition-colors ${selectedDifficulty === diff
+                                ? diff === 'beginner' ? 'text-green-500'
+                                    : diff === 'intermediate' ? 'text-orange-500'
+                                        : 'text-red-500'
+                                : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
                                 }`}
                         >
-                            All Categories
+                            {diff}
                         </button>
-                        {categories.map((cat) => {
-                            const Icon = cat.icon;
-                            return (
-                                <button
-                                    key={cat.name}
-                                    onClick={() => setSelectedCategory(cat.name)}
-                                    className={`px-4 py-2.5 rounded-full text-sm font-semibold transition-all shadow-sm flex items-center gap-2 ${selectedCategory === cat.name
-                                        ? "bg-black text-white shadow-md"
-                                        : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
-                                        }`}
-                                >
-                                    <Icon className="w-4 h-4" />
-                                    {cat.name}
-                                    <span className="text-xs opacity-60">({cat.count})</span>
-                                </button>
-                            );
-                        })}
-                    </div>
+                    ))}
+                </div>
 
-                    {/* Difficulty Filter */}
-                    <div className="flex items-center gap-4 justify-center">
-                        <span className="text-gray-600 text-sm font-medium">Difficulty:</span>
-                        {difficulties.map((diff) => (
-                            <button
-                                key={diff}
-                                onClick={() =>
-                                    setSelectedDifficulty(selectedDifficulty === diff ? "" : diff)
-                                }
-                                className={`px-3 py-1.5 rounded-lg text-sm font-semibold capitalize transition-all ${selectedDifficulty === diff
-                                    ? difficultyColors[diff]
-                                    : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                                    }`}
-                            >
-                                {diff}
-                            </button>
-                        ))}
-                    </div>
-                </motion.div>
-
-                {/* Docs Grid */}
+                {/* Blog Grid */}
                 {loading ? (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[...Array(6)].map((_, i) => (
-                            <div
-                                key={i}
-                                className="bg-gray-800/50 rounded-2xl p-6 animate-pulse"
-                            >
-                                <div className="h-40 bg-gray-700 rounded-xl mb-4" />
-                                <div className="h-6 bg-gray-700 rounded mb-2 w-3/4" />
-                                <div className="h-4 bg-gray-700 rounded w-1/2" />
+                            <div key={i} className="card animate-pulse">
+                                <div className="h-48 bg-[var(--bg-tertiary)] rounded-xl mb-4" />
+                                <div className="h-6 bg-[var(--bg-tertiary)] rounded w-3/4 mb-2" />
+                                <div className="h-4 bg-[var(--bg-tertiary)] rounded w-1/2" />
                             </div>
                         ))}
                     </div>
+                ) : filteredDocs.length === 0 ? (
+                    <EmptyState />
                 ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {docs.map((doc, index) => (
-                            <motion.div
-                                key={doc._id || index}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                            >
-                                <Link
-                                    to={`/docs/${doc._id || doc.slug}`}
-                                    className="block group"
-                                >
-                                    <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl overflow-hidden border border-gray-700 hover:border-blue-500/50 transition-all hover:shadow-lg hover:shadow-blue-500/10">
-                                        {/* Thumbnail */}
-                                        <div className="relative h-48 overflow-hidden">
-                                            <img
-                                                src={
-                                                    doc.thumbnail ||
-                                                    "https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?auto=format&fit=crop&q=80&w=800"
-                                                }
-                                                alt={doc.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                            />
-                                            <div className="absolute inset-0 bg-[#0055FF] />
-
-                                            {/* Badges */}
-                                            <div className="absolute top-4 left-4 flex gap-2">
-                                                {doc.requires_subscription && (
-                                                    <span className="px-3 py-1 bg-purple-500/80 backdrop-blur-sm rounded-full text-xs font-medium flex items-center gap-1">
-                                                        <Lock className="w-3 h-3" />
-                                                        Pro
-                                                    </span>
-                                                )}
-                                                <span
-                                                    className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${difficultyColors[doc.difficulty || "intermediate"]
-                                                        }`}
-                                                >
-                                                    {doc.difficulty || "intermediate"}
-                                                </span>
-                                            </div>
-
-                                            {/* Price */}
-                                            <div className="absolute bottom-4 right-4">
-                                                <span
-                                                    className={`px-3 py-1 rounded-lg text-sm font-bold ${doc.price === 0
-                                                        ? "bg-green-500/80 text-white"
-                                                        : "bg-white/90 text-gray-900"
-                                                        }`}
-                                                >
-                                                    {doc.price === 0 ? "Free" : `$${doc.price}`}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {/* Content */}
-                                        <div className="p-6">
-                                            <div className="flex items-center gap-2 mb-3">
-                                                <span className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">
-                                                    {doc.category}
-                                                </span>
-                                            </div>
-
-                                            <h3 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors line-clamp-2">
-                                                {doc.title}
-                                            </h3>
-
-                                            <p className="text-gray-400 text-sm mb-4 line-clamp-2">
-                                                {doc.description}
-                                            </p>
-
-                                            <div className="flex items-center justify-between text-sm text-gray-500">
-                                                <div className="flex items-center gap-4">
-                                                    <span className="flex items-center gap-1">
-                                                        <Clock className="w-4 h-4" />
-                                                        {doc.reading_time_minutes || 10} min
-                                                    </span>
-                                                    <span className="flex items-center gap-1">
-                                                        <Eye className="w-4 h-4" />
-                                                        {doc.views || 0}
-                                                    </span>
-                                                </div>
-                                                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Link>
-                            </motion.div>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {filteredDocs.map((doc, index) => (
+                            <BlogCard
+                                key={doc._id || doc.id || index}
+                                doc={doc}
+                                index={index}
+                                hasSubscription={hasSubscription}
+                            />
                         ))}
-                    </div>
-                )}
-
-                {/* Empty State */}
-                {!loading && docs.length === 0 && (
-                    <div className="text-center py-20">
-                        <BookOpen className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                        <h3 className="text-2xl font-bold mb-2">No documentation found</h3>
-                        <p className="text-gray-400">
-                            Try adjusting your search or filters
-                        </p>
                     </div>
                 )}
             </div>
@@ -272,92 +173,122 @@ const Docs = () => {
     );
 };
 
-// Demo data for preview
-const demoDocs = [
-    {
-        _id: "1",
-        title: "Production-Grade React Native Boilerplate",
-        description:
-            "Complete guide to setting up a scalable React Native project with TypeScript, state management, navigation, and CI/CD.",
-        category: "React Native",
-        price: 29,
-        thumbnail:
-            "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=800",
-        reading_time_minutes: 45,
-        difficulty: "advanced",
-        requires_subscription: true,
-        views: 1234,
-    },
-    {
-        _id: "2",
-        title: "Monorepo Architecture with Turborepo",
-        description:
-            "Learn how to structure and manage a monorepo for frontend and backend projects using Turborepo.",
-        category: "Architecture",
-        price: 0,
-        thumbnail:
-            "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=800",
-        reading_time_minutes: 30,
-        difficulty: "intermediate",
-        requires_subscription: false,
-        views: 892,
-    },
-    {
-        _id: "3",
-        title: "Payment Integration Deep Dive",
-        description:
-            "Comprehensive guide to integrating Stripe and Razorpay with webhooks, subscriptions, and error handling.",
-        category: "Payment Integration",
-        price: 39,
-        thumbnail:
-            "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&q=80&w=800",
-        reading_time_minutes: 60,
-        difficulty: "advanced",
-        requires_subscription: true,
-        views: 756,
-    },
-    {
-        _id: "4",
-        title: "FastAPI Authentication Handbook",
-        description:
-            "Complete authentication system with JWT, OAuth2, refresh tokens, and role-based access control.",
-        category: "FastAPI",
-        price: 19,
-        thumbnail:
-            "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=800",
-        reading_time_minutes: 35,
-        difficulty: "intermediate",
-        requires_subscription: false,
-        views: 543,
-    },
-    {
-        _id: "5",
-        title: "React Performance Optimization Blueprint",
-        description:
-            "Advanced techniques for optimizing React applications including code splitting, memoization, and profiling.",
-        category: "React",
-        price: 24,
-        thumbnail:
-            "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=800",
-        reading_time_minutes: 40,
-        difficulty: "advanced",
-        requires_subscription: false,
-        views: 678,
-    },
-    {
-        _id: "6",
-        title: "Getting Started with Next.js 14",
-        description:
-            "Beginner-friendly guide to building modern web applications with Next.js App Router.",
-        category: "Next.js",
-        price: 0,
-        thumbnail:
-            "https://images.unsplash.com/photo-1618477388954-7852f32655ec?auto=format&fit=crop&q=80&w=800",
-        reading_time_minutes: 20,
-        difficulty: "beginner",
-        requires_subscription: false,
-        views: 2341,
-    },
-];
+// Blog Card Component
+const BlogCard = ({ doc, index, hasSubscription }) => {
+    const isLocked = doc.requires_subscription && !hasSubscription;
+    const isDevelopersChoice = doc.is_developers_choice || doc.authorRole === 'ADMIN';
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+        >
+            <Link
+                to={isLocked ? '#' : `/docs/${doc._id || doc.id || doc.slug}`}
+                className={`block group h-full ${isLocked ? 'cursor-not-allowed' : ''}`}
+                onClick={(e) => isLocked && e.preventDefault()}
+            >
+                <div className="card card-hover h-full flex flex-col">
+                    {/* Thumbnail */}
+                    <div className="relative aspect-video rounded-xl overflow-hidden mb-4">
+                        <img
+                            src={doc.thumbnail || "https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?w=800"}
+                            alt={doc.title}
+                            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isLocked ? 'blur-sm' : ''}`}
+                        />
+
+                        {/* Badges */}
+                        <div className="absolute top-3 left-3 flex gap-2">
+                            {isDevelopersChoice && (
+                                <span className="px-3 py-1 bg-yellow-500 text-black text-xs font-bold rounded-full flex items-center gap-1">
+                                    <Award className="w-3 h-3" />
+                                    Developer's Choice
+                                </span>
+                            )}
+                            {isLocked && (
+                                <span className="px-3 py-1 bg-black/70 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                                    <Lock className="w-3 h-3" />
+                                    Pro
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Lock Overlay */}
+                        {isLocked && (
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                <div className="text-center text-white">
+                                    <Lock className="w-8 h-8 mx-auto mb-2" />
+                                    <p className="text-sm font-medium">Subscribe to Read</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 flex flex-col">
+                        {/* Meta */}
+                        <div className="flex items-center gap-3 mb-3 text-caption">
+                            <span className="text-[var(--accent-primary)] font-medium">{doc.category}</span>
+                            <span className="w-1 h-1 bg-[var(--text-tertiary)] rounded-full" />
+                            <span className={`capitalize ${doc.difficulty === 'advanced' ? 'text-red-500' :
+                                doc.difficulty === 'intermediate' ? 'text-orange-500' : 'text-green-500'
+                                }`}>
+                                {doc.difficulty || 'beginner'}
+                            </span>
+                        </div>
+
+                        {/* Title */}
+                        <h3 className="text-title text-[var(--text-primary)] mb-2 group-hover:text-[var(--accent-primary)] transition-colors line-clamp-2">
+                            {doc.title}
+                        </h3>
+
+                        {/* Description */}
+                        <p className="text-body text-sm mb-4 line-clamp-2 flex-1">
+                            {doc.description}
+                        </p>
+
+                        {/* Author & Stats */}
+                        <div className="flex items-center justify-between pt-4 border-t border-[var(--border-secondary)]">
+                            <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-full bg-[var(--accent-subtle)] flex items-center justify-center">
+                                    <User className="w-3 h-3 text-[var(--accent-primary)]" />
+                                </div>
+                                <span className="text-xs text-[var(--text-tertiary)]">
+                                    {doc.author?.name || 'CodeStudio Team'}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-3 text-xs text-[var(--text-tertiary)]">
+                                <span className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    {doc.reading_time_minutes || 5} min
+                                </span>
+                                <span className="flex items-center gap-1">
+                                    <Eye className="w-3 h-3" />
+                                    {doc.views || 0}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Link>
+        </motion.div>
+    );
+};
+
+// Empty State
+const EmptyState = () => (
+    <div className="text-center py-20">
+        <div className="w-16 h-16 bg-[var(--bg-tertiary)] rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <BookOpen className="w-8 h-8 text-[var(--text-tertiary)]" />
+        </div>
+        <h3 className="text-headline text-[var(--text-primary)] mb-2">
+            No articles yet
+        </h3>
+        <p className="text-body max-w-sm mx-auto">
+            Blog posts will appear here once published. Check back soon!
+        </p>
+    </div>
+);
 
 export default Docs;

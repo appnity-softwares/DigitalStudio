@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import productService from '../services/productService';
 import BuildSitesHeader from '../components/BuildSitesHeader';
 import TemplateGrid from '../components/TemplateGrid';
 import LoadingSkeleton from '../components/ui/LoadingSkeleton';
 import Pagination from '../components/ui/Pagination';
+import { useProducts } from '../hooks/useQueries';
 
 const Templates = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const keyword = searchParams.get('search') || '';
-    const [templates, setTemplates] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     // Filter states
     const [selectedCategory, setSelectedCategory] = useState('all');
@@ -20,23 +17,14 @@ const Templates = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 12;
 
-    useEffect(() => {
-        fetchTemplates();
-    }, [keyword]);
+    // React Query hook for fetching products
+    const { data: productsData, isLoading: loading, error, refetch } = useProducts({
+        search: keyword,
+        page: 1,
+        limit: 100 // Fetch more for client-side filtering
+    });
 
-    const fetchTemplates = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const data = await productService.getAll(keyword);
-            setTemplates(data);
-        } catch (err) {
-            console.error("Failed to fetch templates", err);
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const templates = productsData?.products || productsData || [];
 
     // Client-side filtering (defensive: ensure templates is an array)
     const templatesList = Array.isArray(templates) ? templates : [];
@@ -165,9 +153,9 @@ const Templates = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <h3 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h3>
-                        <p className="text-gray-500 mb-6">{error}</p>
+                        <p className="text-gray-500 mb-6">{error?.message || 'Failed to load templates'}</p>
                         <button
-                            onClick={fetchTemplates}
+                            onClick={() => refetch()}
                             className="bg-[#0055FF] text-white px-6 py-3 rounded-full font-bold hover:bg-blue-600 transition-colors"
                         >
                             Try Again

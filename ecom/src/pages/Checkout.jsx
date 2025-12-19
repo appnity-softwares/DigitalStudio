@@ -44,6 +44,7 @@ const Checkout = () => {
     const [promoCode, setPromoCode] = useState("");
     const [discount, setDiscount] = useState(0);
     const [discountPercent, setDiscountPercent] = useState(0);
+    const [couponId, setCouponId] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
 
     // License pricing multipliers
@@ -82,22 +83,44 @@ const Checkout = () => {
         }));
     };
 
-    const applyPromoCode = () => {
-        const promoCodes = {
-            SAVE10: 10,
-            LAUNCH20: 20,
-            CODESTUDIO: 25,
-        };
+    const applyPromoCode = async () => {
+        if (!promoCode.trim()) {
+            showToast("Enter a promo code", "error");
+            return;
+        }
 
-        const code = promoCode.toUpperCase();
-        if (promoCodes[code]) {
-            const percent = promoCodes[code];
-            const discountAmount = (getSubtotal() * percent) / 100;
-            setDiscount(discountAmount);
-            setDiscountPercent(percent);
-            showToast(`${percent}% discount applied!`, "success");
-        } else {
-            showToast("Invalid promo code", "error");
+        try {
+            // Validate coupon with backend API
+            const res = await api.post('/coupons/validate', {
+                code: promoCode.trim(),
+                orderTotal: getSubtotal()
+            });
+
+            if (res.data.valid) {
+                const coupon = res.data.coupon;
+                let discountAmount = 0;
+
+                if (coupon.discountType === 'PERCENTAGE') {
+                    discountAmount = (getSubtotal() * coupon.discountValue) / 100;
+                    if (coupon.maxDiscount && discountAmount > coupon.maxDiscount) {
+                        discountAmount = coupon.maxDiscount;
+                    }
+                    setDiscountPercent(coupon.discountValue);
+                } else {
+                    discountAmount = coupon.discountValue;
+                    setDiscountPercent(0);
+                }
+
+                setDiscount(discountAmount);
+                setCouponId(coupon.id);
+                showToast(res.data.message || 'Coupon applied!', 'success');
+            }
+        } catch (err) {
+            const message = err.response?.data?.message || 'Invalid promo code';
+            showToast(message, 'error');
+            setDiscount(0);
+            setDiscountPercent(0);
+            setCouponId(null);
         }
     };
 
@@ -259,22 +282,22 @@ const Checkout = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-12"
                 >
-                    <h1 className="text-4xl font-bold mb-4">
-                        <span className="bg-[#0055FF] ">
+                    <h1 className="text-4xl font-black mb-4 text-gray-900 tracking-tight">
+                        <span className="text-[#0055FF]">
                             Checkout
                         </span>
                     </h1>
-                    <p className="text-gray-600">Complete your purchase securely with Razorpay</p>
+                    <p className="text-gray-600 font-medium">Complete your purchase securely with Razorpay</p>
                 </motion.div>
 
                 {!RAZORPAY_KEY_ID && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl flex items-center gap-3"
+                        className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl flex items-center gap-3"
                     >
-                        <AlertCircle className="w-5 h-5 text-yellow-400 shrink-0" />
-                        <p className="text-yellow-400 text-sm">
+                        <AlertCircle className="w-5 h-5 text-yellow-600 shrink-0" />
+                        <p className="text-yellow-700 text-sm font-medium">
                             Razorpay key not configured. Add VITE_RAZORPAY_KEY_ID to your .env file.
                         </p>
                     </motion.div>
@@ -289,17 +312,17 @@ const Checkout = () => {
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="bg-white shadow-sm rounded-2xl p-6 border border-gray-200"
+                                className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100 hover:shadow-md transition-shadow"
                             >
                                 <div className="flex gap-6">
                                     <img
                                         src={item.image}
                                         alt={item.title}
-                                        className="w-32 h-24 object-cover rounded-xl"
+                                        className="w-32 h-24 object-cover rounded-xl bg-gray-100"
                                     />
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                                        <p className="text-gray-600 text-sm mb-4">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
+                                        <p className="text-gray-500 font-medium text-sm mb-4">
                                             {item.category}
                                         </p>
 
@@ -320,9 +343,9 @@ const Checkout = () => {
                                                             onClick={() =>
                                                                 handleLicenseChange(item._id || item.id, license)
                                                             }
-                                                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isSelected
-                                                                ? "bg-blue-600 text-white"
-                                                                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                                                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all border ${isSelected
+                                                                ? "bg-[#0055FF] text-white border-blue-600 shadow-md shadow-blue-500/20"
+                                                                : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
                                                                 }`}
                                                         >
                                                             <span className="capitalize">{license}</span>
@@ -334,7 +357,7 @@ const Checkout = () => {
                                                 }
                                             )}
                                         </div>
-                                        <p className="text-xs text-gray-500 mt-2">
+                                        <p className="text-xs text-gray-500 mt-3 font-medium">
                                             {
                                                 licenseDescriptions[
                                                 selectedLicenses[item._id || item.id] || "personal"
@@ -352,13 +375,13 @@ const Checkout = () => {
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="bg-white shadow-sm rounded-2xl p-6 border border-gray-200 sticky top-24"
+                            className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100 sticky top-24"
                         >
-                            <h3 className="text-xl font-bold mb-6">Order Summary</h3>
+                            <h3 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h3>
 
                             {/* Promo Code */}
                             <div className="mb-6">
-                                <label className="text-sm text-gray-600 mb-2 block">
+                                <label className="text-sm font-bold text-gray-700 mb-2 block">
                                     Promo Code
                                 </label>
                                 <div className="flex gap-2">
@@ -367,30 +390,31 @@ const Checkout = () => {
                                         value={promoCode}
                                         onChange={(e) => setPromoCode(e.target.value)}
                                         placeholder="Enter code"
-                                        className="flex-1 px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 text-white"
+                                        className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-gray-900 placeholder-gray-400 font-medium transition-colors"
                                     />
                                     <button
                                         onClick={applyPromoCode}
-                                        className="px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl transition-colors"
+                                        className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-xl transition-colors border border-gray-200"
                                     >
                                         <Tag className="w-5 h-5" />
                                     </button>
                                 </div>
                                 {discountPercent > 0 && (
-                                    <p className="text-green-400 text-sm mt-2">
+                                    <p className="text-green-600 font-bold text-sm mt-2 flex items-center gap-1">
+                                        <Check className="w-4 h-4" />
                                         {discountPercent}% discount applied
                                     </p>
                                 )}
                             </div>
 
                             {/* Summary Lines */}
-                            <div className="space-y-3 mb-6 pb-6 border-b border-gray-200">
-                                <div className="flex justify-between text-gray-600">
+                            <div className="space-y-3 mb-6 pb-6 border-b border-gray-100">
+                                <div className="flex justify-between text-gray-600 font-medium">
                                     <span>Subtotal ({cartItems.length} items)</span>
                                     <span>${getSubtotal().toFixed(2)}</span>
                                 </div>
                                 {discount > 0 && (
-                                    <div className="flex justify-between text-green-400">
+                                    <div className="flex justify-between text-green-600 font-bold">
                                         <span>Discount</span>
                                         <span>-${discount.toFixed(2)}</span>
                                     </div>
@@ -398,9 +422,9 @@ const Checkout = () => {
                             </div>
 
                             {/* Total */}
-                            <div className="flex justify-between text-2xl font-bold mb-8">
+                            <div className="flex justify-between text-2xl font-black text-gray-900 mb-8">
                                 <span>Total</span>
-                                <span className="bg-[#0055FF] ">
+                                <span className="text-[#0055FF]">
                                     ${calculateTotal()}
                                 </span>
                             </div>

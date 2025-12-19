@@ -156,7 +156,7 @@ Suggested:
 * FastAPI + SQLAlchemy
 
 Database: PostgreSQL
-Storage: AWS S3 / Supabase Storage
+Storage: Cloudflare R2 (S3-compatible)
 
 ## **4.3 Payments**
 

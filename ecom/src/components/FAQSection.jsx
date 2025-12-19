@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 const FAQItem = ({ question, answer, isOpen, onClick }) => {
     return (
         <div
-            className="bg-white rounded-2xl p-6 md:p-8 cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md"
+            className="bg-white rounded-2xl p-6 md:p-8 cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md border border-gray-100"
             onClick={onClick}
         >
             <div className="flex justify-between items-start gap-4">
